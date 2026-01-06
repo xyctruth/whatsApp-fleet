@@ -3,7 +3,7 @@ import { MessageSquare, Send, RefreshCw, Search, Filter } from 'lucide-react';
 import { workerService } from '../services/api';
 import LoadingSpinner from '../components/LoadingSpinner';
 
-const Messages = ({ selectedWorker, workers, onWorkerSelect }) => {
+const Messages = ({ selectedWorker }) => {
   const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');

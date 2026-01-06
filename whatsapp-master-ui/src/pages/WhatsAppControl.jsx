@@ -22,8 +22,10 @@ import {
 import toast from 'react-hot-toast';
 import LoadingSpinner from '../components/LoadingSpinner';
 import { workerService, masterService } from '../services/api';
+import { useI18n } from '../i18n/index.js';
 
-const WhatsAppControl = ({ selectedWorker, workers, onWorkerSelect, onRefresh }) => {
+const WhatsAppControl = ({ selectedWorker, onWorkerSelect, onRefresh }) => {
+  const { t } = useI18n();
   const [activeTab, setActiveTab] = useState('login'); // login, proxy, messages, contacts, debug
   const [loginStatus, setLoginStatus] = useState(null);
   const [contacts, setContacts] = useState([]);
@@ -173,6 +175,7 @@ const WhatsAppControl = ({ selectedWorker, workers, onWorkerSelect, onRefresh })
         checkLoginStatus(); // 刷新状态
       }
     } catch (error) {
+      console.error('停止服务失败:', error);
       toast.error('停止服务失败');
     } finally {
       setLoading(false);
@@ -353,6 +356,7 @@ const WhatsAppControl = ({ selectedWorker, workers, onWorkerSelect, onRefresh })
         toast.error('代理切换失败');
       }
     } catch (error) {
+      console.error('代理切换请求失败:', error);
       toast.error('代理切换请求失败');
     } finally {
       setLoading(false);
@@ -387,6 +391,7 @@ const WhatsAppControl = ({ selectedWorker, workers, onWorkerSelect, onRefresh })
         toast.error('代理检测失败');
       }
     } catch (error) {
+      console.error('代理检测请求失败:', error);
       toast.error('代理检测请求失败');
     } finally {
       setLoading(false);
@@ -407,6 +412,7 @@ const WhatsAppControl = ({ selectedWorker, workers, onWorkerSelect, onRefresh })
         toast.error('元素检测失败');
       }
     } catch (error) {
+      console.error('元素检测请求失败:', error);
       toast.error('元素检测请求失败');
     }
   };
@@ -419,6 +425,7 @@ const WhatsAppControl = ({ selectedWorker, workers, onWorkerSelect, onRefresh })
       const win = window.open('', '_blank');
       win.document.write(response.data);
     } catch (error) {
+      console.error('获取调试HTML失败:', error);
       toast.error('获取调试HTML失败');
     }
   };
@@ -578,6 +585,7 @@ const WhatsAppControl = ({ selectedWorker, workers, onWorkerSelect, onRefresh })
         setLoginStatus(null);
       }
     } catch (error) {
+      console.error('关闭Worker失败:', error);
       toast.error('关闭Worker失败');
     } finally {
       setLoading(false);
@@ -908,13 +916,13 @@ const WhatsAppControl = ({ selectedWorker, workers, onWorkerSelect, onRefresh })
       {/* 顶部状态栏 */}
       <div className="flex items-center justify-between bg-surface p-6 rounded-2xl shadow-sm border border-border">
         <div>
-          <h1 className="text-2xl font-bold text-text-main">WhatsApp 控制</h1>
+          <h1 className="text-2xl font-bold text-text-main">{t('sidebar.menu.whatsapp')}</h1>
           <div className="flex items-center mt-2 space-x-3 text-sm">
             <span className="font-semibold text-primary bg-primary/10 px-2 py-0.5 rounded">
               {selectedWorker.name || `Worker ${selectedWorker.id}`}
             </span>
             <span className="text-border">|</span>
-            <span className="text-text-secondary font-mono">端口: {selectedWorker.port}</span>
+            <span className="text-text-secondary font-mono">{t('dashboard.port')}: {selectedWorker.port}</span>
           </div>
         </div>
         <div className="flex items-center space-x-6">
@@ -927,7 +935,7 @@ const WhatsAppControl = ({ selectedWorker, workers, onWorkerSelect, onRefresh })
           <button 
             onClick={checkLoginStatus} 
             className={`p-2.5 rounded-xl hover:bg-bg text-text-secondary hover:text-primary transition-all duration-200 ${loading ? 'animate-spin text-primary' : ''}`}
-            title="刷新状态"
+            title={t('common.refresh')}
           >
             <RefreshCw className="w-5 h-5" />
           </button>
@@ -940,7 +948,7 @@ const WhatsAppControl = ({ selectedWorker, workers, onWorkerSelect, onRefresh })
                 className="flex items-center space-x-2 px-4 py-2 bg-green-50 text-green-600 rounded-xl hover:bg-green-100 transition-colors font-medium text-sm"
              >
                 <LogIn className="w-4 h-4" />
-                <span>启动服务</span>
+                <span>{t('common.start')}</span>
              </button>
           ) : (
              <button
@@ -949,7 +957,7 @@ const WhatsAppControl = ({ selectedWorker, workers, onWorkerSelect, onRefresh })
                 className="flex items-center space-x-2 px-4 py-2 bg-red-50 text-red-600 rounded-xl hover:bg-red-100 transition-colors font-medium text-sm"
              >
                 <Shield className="w-4 h-4" />
-                <span>停止服务</span>
+                <span>{t('common.stop')}</span>
              </button>
           )}
         </div>

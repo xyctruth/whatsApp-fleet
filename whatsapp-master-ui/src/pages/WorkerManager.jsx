@@ -3,8 +3,10 @@ import { useNavigate } from 'react-router-dom';
 import { Plus, Server, Trash2, Edit, Play, Pause, RefreshCw } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { masterService, workerService } from '../services/api';
+import { useI18n } from '../i18n/index.js';
 
 const WorkerManager = ({ workers, onRefresh, onWorkerSelect }) => {
+  const { t } = useI18n();
   const navigate = useNavigate();
   const [refreshing, setRefreshing] = useState(false);
   const [workerStatuses, setWorkerStatuses] = useState({});
@@ -43,25 +45,25 @@ const WorkerManager = ({ workers, onRefresh, onWorkerSelect }) => {
 
   useEffect(() => {
       if (workers.length > 0) {
-          fetchRealtimeStatuses();
+          setTimeout(() => { fetchRealtimeStatuses(); }, 0);
       }
   }, [workers]);
 
   const handleDeleteWorker = async (workerId) => {
-    if (!confirm('确定要删除这个Worker吗？')) return;
+    if (!confirm('Are you sure to delete this Worker?')) return;
     
     try {
       const response = await masterService.deleteAccount(workerId);
       
       if (response.data.success) {
-        toast.success('Worker删除成功');
+        toast.success('Worker deleted');
         onRefresh();
       } else {
-        toast.error(response.data.message || 'Worker删除失败');
+        toast.error(response.data.message || 'Failed to delete Worker');
       }
     } catch (error) {
-      console.error('删除Worker失败:', error);
-      toast.error('删除Worker失败');
+      console.error('Failed to delete Worker:', error);
+      toast.error('Failed to delete Worker');
     }
   };
 
@@ -87,19 +89,19 @@ const WorkerManager = ({ workers, onRefresh, onWorkerSelect }) => {
       case 'logged_in':
       case 'online':
       case 'connected':
-        return { label: '在线', className: 'status-online' };
+        return { label: t('status.online'), className: 'status-online' };
       case 'running':
       case 'waiting_for_qr':
       case 'waiting_for_phone':
-        return { label: '运行中', className: 'status-info' };
+        return { label: t('status.running'), className: 'status-info' };
       case 'stopped':
       case 'offline':
       case 'logged_out':
-        return { label: '离线', className: 'status-offline' };
+        return { label: t('status.offline'), className: 'status-offline' };
       case 'error':
-        return { label: '错误', className: 'status-error' };
+        return { label: t('status.error'), className: 'status-error' };
       default:
-        return { label: status || '连接中', className: 'status-warning' };
+        return { label: status || t('status.connecting'), className: 'status-warning' };
     }
   };
 
@@ -109,7 +111,7 @@ const WorkerManager = ({ workers, onRefresh, onWorkerSelect }) => {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-text-main flex items-center gap-3">
-             Worker 管理
+             {t('sidebar.menu.workers')}
              <button 
                 onClick={() => { onRefresh(); fetchRealtimeStatuses(); }} 
                 className={`p-2 rounded-full hover:bg-bg text-text-secondary transition-all ${refreshing ? 'animate-spin text-primary' : ''}`}
@@ -118,7 +120,7 @@ const WorkerManager = ({ workers, onRefresh, onWorkerSelect }) => {
                 <RefreshCw className="w-5 h-5" />
              </button>
           </h1>
-          <p className="text-text-secondary mt-1">管理所有WhatsApp Worker实例</p>
+          <p className="text-text-secondary mt-1">Manage all WhatsApp Worker instances</p>
         </div>
         <button
           onClick={() => {
@@ -128,7 +130,7 @@ const WorkerManager = ({ workers, onRefresh, onWorkerSelect }) => {
           className="btn-primary flex items-center space-x-2 shadow-lg shadow-primary/30 hover:shadow-primary/50"
         >
           <Plus className="w-4 h-4" />
-          <span>连接新账号</span>
+          <span>Connect New Account</span>
         </button>
       </div>
 
@@ -164,15 +166,15 @@ const WorkerManager = ({ workers, onRefresh, onWorkerSelect }) => {
 
             <div className="space-y-3 mb-6 relative z-10 bg-bg/50 p-4 rounded-xl">
               <div className="flex justify-between text-sm">
-                <span className="text-text-secondary">状态</span>
+                <span className="text-text-secondary">Status</span>
                 <span className="font-medium text-text-main font-mono">
                     {workerStatuses[worker.id] || worker.status}
                 </span>
               </div>
               <div className="flex justify-between text-sm">
-                <span className="text-text-secondary">创建时间</span>
+                <span className="text-text-secondary">Created</span>
                 <span className="font-medium text-text-main">
-                  {new Date(worker.created_at || Date.now()).toLocaleDateString()}
+                  {worker.created_at ? new Date(worker.created_at).toLocaleDateString() : ''}
                 </span>
               </div>
               {worker.description && (
@@ -190,7 +192,7 @@ const WorkerManager = ({ workers, onRefresh, onWorkerSelect }) => {
                 }}
                 className="btn-primary flex-1 py-2.5 text-sm shadow-md shadow-primary/20"
               >
-                选择使用
+                Use
               </button>
               <button
                 onClick={() => handleRestartWorker(worker.id)}
@@ -215,8 +217,8 @@ const WorkerManager = ({ workers, onRefresh, onWorkerSelect }) => {
             <div className="w-20 h-20 bg-bg rounded-full flex items-center justify-center mb-6">
               <Server className="w-10 h-10 text-text-secondary" />
             </div>
-            <h3 className="text-xl font-bold text-text-main mb-2">暂无Worker</h3>
-            <p className="text-text-secondary mb-8">连接第一个WhatsApp账号来开始使用</p>
+            <h3 className="text-xl font-bold text-text-main mb-2">{t('dashboard.noWorkers')}</h3>
+            <p className="text-text-secondary mb-8">Connect your first WhatsApp account to get started</p>
             <button
               onClick={() => {
                 onWorkerSelect(null);
@@ -224,7 +226,7 @@ const WorkerManager = ({ workers, onRefresh, onWorkerSelect }) => {
               }}
               className="btn-primary px-8 py-3 shadow-lg shadow-primary/30"
             >
-              连接新账号
+              Connect New Account
             </button>
           </div>
         )}

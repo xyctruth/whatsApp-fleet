@@ -11,11 +11,13 @@ import WhatsAppControl from './pages/WhatsAppControl';
 import Messages from './pages/Messages';
 import Settings from './pages/Settings';
 import LoadingSpinner from './components/LoadingSpinner';
+import { useI18n } from './i18n/index.js';
 
 // 服务导入
 import { masterService } from './services/api';
 
 function App() {
+  const { t } = useI18n();
   const [loading, setLoading] = useState(true);
   const [systemHealth, setSystemHealth] = useState(null);
   const [selectedWorker, setSelectedWorker] = useState(null);
@@ -111,10 +113,10 @@ function App() {
         <div className="text-center">
           <LoadingSpinner size="large" />
           <h2 className="mt-4 text-xl font-semibold text-gray-700">
-            正在加载 WhatsApp Master UI...
+            {t('app.loading.title')}
           </h2>
           <p className="mt-2 text-gray-500">
-            请稍候，正在初始化系统
+            {t('app.loading.subtitle')}
           </p>
         </div>
       </div>
@@ -159,7 +161,6 @@ function App() {
           <div className="flex-1 flex flex-col">
             {/* 头部 */}
             <Header 
-              systemHealth={systemHealth}
               selectedWorker={selectedWorker}
               onRefresh={() => {
                 checkSystemHealth();
@@ -212,8 +213,6 @@ function App() {
                     <Messages 
                       key={refreshKey}
                       selectedWorker={selectedWorker}
-                      workers={workers}
-                      onWorkerSelect={setSelectedWorker}
                     />
                   } 
                 />

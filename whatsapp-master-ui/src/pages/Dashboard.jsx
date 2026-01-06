@@ -9,8 +9,10 @@ import {
 } from 'lucide-react';
 import LoadingSpinner from '../components/LoadingSpinner';
 import { masterService, workerService } from '../services/api';
+import { useI18n } from '../i18n/index.js';
 
 const Dashboard = ({ systemHealth, workers, onRefresh }) => {
+  const { t } = useI18n();
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
   const [pairingCodes, setPairingCodes] = useState({});
@@ -27,7 +29,7 @@ const Dashboard = ({ systemHealth, workers, onRefresh }) => {
         setStats(response.data.data);
       }
     } catch (error) {
-      console.error('加载统计数据失败:', error);
+      console.error('Failed to load stats:', error);
     } finally {
       setLoading(false);
     }
@@ -49,34 +51,37 @@ const Dashboard = ({ systemHealth, workers, onRefresh }) => {
           if (code) {
             result[w.id] = code;
           }
-        } catch (e) {}
+        } catch (e) { void e; }
       }
       setPairingCodes(result);
     };
     fetchCodes();
   }, [workers]);
 
-  const StatCard = ({ title, value, icon: Icon, color, change }) => (
-    <div className="card">
-      <div className="flex items-center justify-between">
-        <div>
-          <p className="text-sm font-medium text-gray-600">{title}</p>
-          <p className="text-2xl font-bold text-gray-900">{value}</p>
-          {change && (
-            <p className={`text-sm flex items-center mt-1 ${
-              change > 0 ? 'text-green-600' : 'text-red-600'
-            }`}>
-              <TrendingUp className="w-4 h-4 mr-1" />
-              {change > 0 ? '+' : ''}{change}%
-            </p>
-          )}
-        </div>
-        <div className={`p-3 rounded-full ${color}`}>
-          <Icon className="w-6 h-6 text-white" />
+  const StatCard = ({ title, value, icon, color, change }) => {
+    const IconComp = icon;
+    return (
+      <div className="card">
+        <div className="flex items-center justify-between">
+          <div>
+            <p className="text-sm font-medium text-gray-600">{title}</p>
+            <p className="text-2xl font-bold text-gray-900">{value}</p>
+            {change && (
+              <p className={`text-sm flex items-center mt-1 ${
+                change > 0 ? 'text-green-600' : 'text-red-600'
+              }`}>
+                <TrendingUp className="w-4 h-4 mr-1" />
+                {change > 0 ? '+' : ''}{change}%
+              </p>
+            )}
+          </div>
+          <div className={`p-3 rounded-full ${color}`}>
+            <IconComp className="w-6 h-6 text-white" />
+          </div>
         </div>
       </div>
-    </div>
-  );
+    );
+  };
 
   const getWorkerStatusCount = (status) => {
     return workers.filter(worker => worker.status === status).length;
@@ -95,8 +100,8 @@ const Dashboard = ({ systemHealth, workers, onRefresh }) => {
       {/* 页面标题 */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">仪表板</h1>
-          <p className="text-gray-600">系统概览和实时状态</p>
+          <h1 className="text-2xl font-bold text-gray-900">{t('dashboard.title')}</h1>
+          <p className="text-gray-600">{t('dashboard.subtitle')}</p>
         </div>
         <button
           onClick={() => {
@@ -105,7 +110,7 @@ const Dashboard = ({ systemHealth, workers, onRefresh }) => {
           }}
           className="btn-primary"
         >
-          刷新数据
+          {t('dashboard.refresh')}
         </button>
       </div>
 
@@ -115,10 +120,8 @@ const Dashboard = ({ systemHealth, workers, onRefresh }) => {
           <div className="flex items-center">
             <AlertCircle className="w-5 h-5 text-red-500 mr-2" />
             <div>
-              <h3 className="text-sm font-medium text-red-800">系统连接异常</h3>
-              <p className="text-sm text-red-700 mt-1">
-                无法连接到Master服务，请检查服务状态
-              </p>
+              <h3 className="text-sm font-medium text-red-800">Connection error</h3>
+              <p className="text-sm text-red-700 mt-1">Cannot connect to Master service</p>
             </div>
           </div>
         </div>
@@ -186,10 +189,10 @@ const Dashboard = ({ systemHealth, workers, onRefresh }) => {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Worker状态列表 */}
         <div className="card">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">Worker状态</h3>
+          <h3 className="text-lg font-semibold text-gray-900 mb-4">{t('dashboard.workerStatus')}</h3>
           <div className="space-y-3">
             {workers.length === 0 ? (
-              <p className="text-gray-500 text-center py-4">暂无Worker实例</p>
+              <p className="text-gray-500 text-center py-4">{t('dashboard.noWorkers')}</p>
             ) : (
               workers.map((worker) => (
                 <div key={worker.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
@@ -202,15 +205,15 @@ const Dashboard = ({ systemHealth, workers, onRefresh }) => {
                       <p className="font-medium text-gray-900">
                         {worker.name || `Worker ${worker.id}`}
                       </p>
-                      <p className="text-sm text-gray-500">端口: {worker.port}</p>
+                      <p className="text-sm text-gray-500">{t('dashboard.port')}: {worker.port}</p>
                     </div>
                   </div>
                   <span className={`px-2 py-1 rounded-full text-xs font-medium ${
                     worker.status === 'online' ? 'status-online' :
                     worker.status === 'offline' ? 'status-offline' : 'status-loading'
                   }`}>
-                    {worker.status === 'online' ? '在线' :
-                     worker.status === 'offline' ? '离线' : '连接中'}
+                    {worker.status === 'online' ? t('status.online') :
+                     worker.status === 'offline' ? t('status.offline') : t('status.connecting')}
                   </span>
                 </div>
               ))

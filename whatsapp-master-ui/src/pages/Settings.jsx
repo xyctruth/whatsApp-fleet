@@ -3,8 +3,10 @@ import { Save, RefreshCw, Settings as SettingsIcon, Database, Network } from 'lu
 import toast from 'react-hot-toast';
 import { masterService } from '../services/api';
 import LoadingSpinner from '../components/LoadingSpinner';
+import { useI18n } from '../i18n/index.js';
 
 const Settings = ({ systemHealth, onRefresh }) => {
+  const { t } = useI18n();
   const [config, setConfig] = useState({
     system: {
       max_workers: 10,
@@ -40,7 +42,7 @@ const Settings = ({ systemHealth, onRefresh }) => {
         setConfig(response.data.data || config);
       }
     } catch (error) {
-      console.error('加载配置失败:', error);
+      console.error('Failed to load config:', error);
     } finally {
       setLoading(false);
     }
@@ -57,8 +59,8 @@ const Settings = ({ systemHealth, onRefresh }) => {
         toast.error(response.data.message || '配置保存失败');
       }
     } catch (error) {
-      console.error('保存配置失败:', error);
-      toast.error('保存配置失败');
+      console.error('Failed to save config:', error);
+      toast.error('Failed to save config');
     } finally {
       setSaving(false);
     }
@@ -87,8 +89,8 @@ const Settings = ({ systemHealth, onRefresh }) => {
       {/* 页面标题 */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">系统设置</h1>
-          <p className="text-gray-600">配置系统参数和WhatsApp设置</p>
+          <h1 className="text-2xl font-bold text-gray-900">{t('sidebar.menu.settings')}</h1>
+          <p className="text-gray-600">Configure system and WhatsApp settings</p>
         </div>
         <div className="flex space-x-3">
           <button
@@ -100,7 +102,7 @@ const Settings = ({ systemHealth, onRefresh }) => {
             className="btn-secondary flex items-center space-x-2"
           >
             <RefreshCw className="w-4 h-4" />
-            <span>刷新</span>
+            <span>{t('common.refresh')}</span>
           </button>
           <button
             onClick={handleSaveConfig}
@@ -108,7 +110,7 @@ const Settings = ({ systemHealth, onRefresh }) => {
             className="btn-primary flex items-center space-x-2"
           >
             {saving ? <LoadingSpinner size="small" /> : <Save className="w-4 h-4" />}
-            <span>保存配置</span>
+            <span>Save Config</span>
           </button>
         </div>
       </div>

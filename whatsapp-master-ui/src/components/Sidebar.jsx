@@ -10,14 +10,16 @@ import {
   ChevronDown,
   FileText
 } from 'lucide-react';
+import { useI18n } from '../i18n/index.js';
 
 const Sidebar = ({ systemHealth, selectedWorker, workers, onWorkerSelect, onMenuClick }) => {
+  const { t } = useI18n();
   const navItems = [
-    { path: '/dashboard', icon: LayoutDashboard, label: '仪表板' },
-    { path: '/workers', icon: Server, label: 'Worker管理' },
-    { path: '/whatsapp', icon: MessageSquare, label: 'WhatsApp控制' },
-    { path: '/messages', icon: Mail, label: '消息管理' },
-    { path: '/settings', icon: Settings, label: '系统设置' },
+    { path: '/dashboard', icon: LayoutDashboard, label: t('sidebar.menu.dashboard') },
+    { path: '/workers', icon: Server, label: t('sidebar.menu.workers') },
+    { path: '/whatsapp', icon: MessageSquare, label: t('sidebar.menu.whatsapp') },
+    { path: '/messages', icon: Mail, label: t('sidebar.menu.messages') },
+    { path: '/settings', icon: Settings, label: t('sidebar.menu.settings') },
   ];
 
   const getStatusColor = (status) => {
@@ -31,10 +33,10 @@ const Sidebar = ({ systemHealth, selectedWorker, workers, onWorkerSelect, onMenu
 
   const getStatusText = (status) => {
     switch (status) {
-      case 'healthy': return '正常';
-      case 'degraded': return '降级';
-      case 'down': return '停机';
-      default: return '未知';
+      case 'healthy': return t('status.health.healthy');
+      case 'degraded': return t('status.health.degraded');
+      case 'down': return t('status.health.down');
+      default: return t('status.health.unknown');
     }
   };
 
@@ -43,17 +45,17 @@ const Sidebar = ({ systemHealth, selectedWorker, workers, onWorkerSelect, onMenu
       case 'logged_in':
       case 'online':
       case 'connected':
-        return { label: '在线', className: 'status-online' };
+        return { label: t('status.online'), className: 'status-online' };
       case 'running':
-        return { label: '运行中', className: 'status-info' };
+        return { label: t('status.running'), className: 'status-info' };
       case 'stopped':
       case 'offline':
       case 'logged_out':
-        return { label: '离线', className: 'status-offline' };
+        return { label: t('status.offline'), className: 'status-offline' };
       case 'error':
-        return { label: '错误', className: 'status-error' };
+        return { label: t('status.error'), className: 'status-error' };
       default:
-        return { label: status || '连接中', className: 'status-warning' };
+        return { label: status || t('status.connecting'), className: 'status-warning' };
     }
   };
 
@@ -75,7 +77,7 @@ const Sidebar = ({ systemHealth, selectedWorker, workers, onWorkerSelect, onMenu
       {/* 系统状态 */}
       <div className="p-4 border-b border-border bg-surface/50 backdrop-blur-sm">
         <div className="flex items-center justify-between">
-          <span className="text-sm font-medium text-text-secondary">系统状态</span>
+          <span className="text-sm font-medium text-text-secondary">{t('sidebar.system.status')}</span>
           <div className="flex items-center space-x-2 px-2 py-1 rounded-full bg-bg">
             <Circle className={`w-2.5 h-2.5 fill-current ${getStatusColor(systemHealth)}`} />
             <span className={`text-xs font-semibold ${getStatusColor(systemHealth)}`}>
@@ -89,7 +91,7 @@ const Sidebar = ({ systemHealth, selectedWorker, workers, onWorkerSelect, onMenu
       {workers.length > 0 && (
         <div className="p-4 border-b border-border">
           <label className="block text-xs font-semibold text-text-secondary uppercase tracking-wider mb-2">
-            当前Worker
+            {selectedWorker ? (selectedWorker.name || `Worker ${selectedWorker.id}`) : t('sidebar.selectWorker')}
           </label>
           <div className="relative group">
             <select
@@ -100,7 +102,7 @@ const Sidebar = ({ systemHealth, selectedWorker, workers, onWorkerSelect, onMenu
               }}
               className="w-full appearance-none bg-bg border border-border text-text-main text-sm rounded-lg pl-3 pr-10 py-2.5 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all duration-200 hover:border-primary/50"
             >
-              <option value="">选择Worker</option>
+              <option value="">{t('sidebar.selectWorker')}</option>
               {workers.map((worker) => (
                 <option key={worker.id} value={worker.id}>
                   {worker.name || `Worker ${worker.id}`}
@@ -158,7 +160,7 @@ const Sidebar = ({ systemHealth, selectedWorker, workers, onWorkerSelect, onMenu
               className="flex items-center space-x-3 px-4 py-3 rounded-xl transition-all duration-200 group text-text-secondary hover:bg-bg hover:text-text-main hover:translate-x-1"
             >
               <FileText className="w-5 h-5 transition-transform duration-200 group-hover:scale-110" />
-              <span className="font-medium">API 文档</span>
+              <span className="font-medium">{t('sidebar.api.docs')}</span>
             </a>
           </li>
         </ul>
