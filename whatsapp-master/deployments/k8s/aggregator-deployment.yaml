@@ -1,0 +1,120 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: whatsapp-aggregator
+  namespace: whatsapp
+  labels:
+    app: whatsapp-aggregator
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: whatsapp-aggregator
+  template:
+    metadata:
+      labels:
+        app: whatsapp-aggregator
+    spec:
+      containers:
+      - name: aggregator
+        image: whatsapp-aggregator:latest
+        ports:
+        - containerPort: 8080
+        env:
+        - name: SERVER_PORT
+          value: "8080"
+        - name: SERVER_HOST
+          value: "0.0.0.0"
+        - name: ENVIRONMENT
+          value: "production"
+        - name: DOCKER_ENABLED
+          value: "false"
+        - name: K8S_ENABLED
+          value: "true"
+        - name: K8S_NAMESPACE
+          value: "whatsapp"
+        - name: K8S_WHATSAPP_IMAGE
+          value: "whatsapp-node-service:latest"
+        - name: K8S_SERVICE_PORT
+          value: "3000"
+        - name: DB_TYPE
+          value: "sqlite"
+        - name: DB_NAME
+          value: "/data/whatsapp_aggregator.db"
+        volumeMounts:
+        - name: data
+          mountPath: /data
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "100m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+      volumes:
+      - name: data
+        persistentVolumeClaim:
+          claimName: whatsapp-aggregator-pvc
+      serviceAccountName: whatsapp-aggregator
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: whatsapp-aggregator-service
+  namespace: whatsapp
+spec:
+  selector:
+    app: whatsapp-aggregator
+  ports:
+    - protocol: TCP
+      port: 8080
+      targetPort: 8080
+  type: ClusterIP
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: whatsapp-aggregator-pvc
+  namespace: whatsapp
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: whatsapp-aggregator
+  namespace: whatsapp
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: whatsapp-aggregator
+rules:
+- apiGroups: [""]
+  resources: ["pods", "services"]
+  verbs: ["get", "list", "create", "update", "patch", "delete"]
+- apiGroups: ["apps"]
+  resources: ["deployments"]
+  verbs: ["get", "list", "create", "update", "patch", "delete"]
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: whatsapp-aggregator
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: whatsapp-aggregator
+subjects:
+- kind: ServiceAccount
+  name: whatsapp-aggregator
+  namespace: whatsapp

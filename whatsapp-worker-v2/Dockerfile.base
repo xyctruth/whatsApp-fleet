@@ -1,0 +1,24 @@
+FROM node:18-bullseye-slim
+
+# Replace Debian sources with a mirror (Aliyun) for better connectivity
+RUN sed -i 's/deb.debian.org/mirrors.aliyun.com/g' /etc/apt/sources.list && \
+    sed -i 's/security.debian.org/mirrors.aliyun.com/g' /etc/apt/sources.list
+
+# Install Chrome dependencies and Chrome itself
+# This layer changes infrequently, so it's good for a base image
+RUN apt-get update && apt-get install -y \
+    chromium \
+    libnss3 \
+    libfreetype6 \
+    libharfbuzz0b \
+    ca-certificates \
+    fonts-freefont-ttf \
+    git \
+    && rm -rf /var/lib/apt/lists/*
+
+# Pre-install global dependencies if any (optional)
+# RUN npm install -g pm2
+
+# Define environment variables for Puppeteer
+ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true \
+    PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium

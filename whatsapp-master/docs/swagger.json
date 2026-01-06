@@ -1,0 +1,1073 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "description": "API for WhatsApp Multi-Service Aggregator",
+        "title": "WhatsApp Aggregator API",
+        "termsOfService": "http://swagger.io/terms/",
+        "contact": {
+            "name": "API Support",
+            "url": "http://www.swagger.io/support",
+            "email": "support@swagger.io"
+        },
+        "license": {
+            "name": "Apache 2.0",
+            "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
+        },
+        "version": "1.0"
+    },
+    "host": "localhost:8080",
+    "basePath": "/api/v1",
+    "paths": {
+        "/accounts": {
+            "get": {
+                "description": "Get all registered accounts",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Account"
+                ],
+                "summary": "List Accounts",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/model.APIResponse"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "Create a new WhatsApp account worker",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Account"
+                ],
+                "summary": "Create Account",
+                "parameters": [
+                    {
+                        "description": "Login Request",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.LoginRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/model.APIResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/accounts/{id}": {
+            "get": {
+                "description": "Get account details by ID",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Account"
+                ],
+                "summary": "Get Account",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Account ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/model.APIResponse"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Delete an account by ID",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Account"
+                ],
+                "summary": "Delete Account",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Account ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/model.APIResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/accounts/{id}/close": {
+            "post": {
+                "description": "Close the account session",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Account"
+                ],
+                "summary": "Close Account",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Account ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/model.APIResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/accounts/{id}/contacts": {
+            "get": {
+                "description": "Get contacts for a specific account",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Contact"
+                ],
+                "summary": "Get Contacts",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Account ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/model.APIResponse"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "Add a new contact to the account",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Contact"
+                ],
+                "summary": "Add Contact",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Account ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Contact Info",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/model.APIResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/accounts/{id}/debug": {
+            "get": {
+                "description": "Get debug info for a specific account",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Debug"
+                ],
+                "summary": "Get Debug Info",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Account ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/model.APIResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/accounts/{id}/debug/check-messages": {
+            "post": {
+                "description": "Manually trigger message check",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Debug"
+                ],
+                "summary": "Check Messages",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Account ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/model.APIResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/accounts/{id}/debug/elements": {
+            "get": {
+                "description": "Get debug elements of the page",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Debug"
+                ],
+                "summary": "Get Debug Elements",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Account ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/model.APIResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/accounts/{id}/debug/html": {
+            "get": {
+                "description": "Get debug HTML of the page",
+                "produces": [
+                    "text/html"
+                ],
+                "tags": [
+                    "Debug"
+                ],
+                "summary": "Get Debug HTML",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Account ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/accounts/{id}/groups": {
+            "post": {
+                "description": "Create a new group",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Group"
+                ],
+                "summary": "Create Group",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Account ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Group Info",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/model.APIResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/accounts/{id}/groups/participants": {
+            "post": {
+                "description": "Add participants to a group",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Group"
+                ],
+                "summary": "Add Group Participants",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Account ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Participants Info",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/model.APIResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/accounts/{id}/login/refresh": {
+            "post": {
+                "description": "Refresh login session",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Refresh Login",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Account ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/model.APIResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/accounts/{id}/login/status": {
+            "get": {
+                "description": "Check login status for a specific account",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Check Login Status",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Account ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/model.APIResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/accounts/{id}/logout": {
+            "post": {
+                "description": "Logout from WhatsApp",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Logout",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Account ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/model.APIResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/accounts/{id}/logs": {
+            "get": {
+                "description": "Get logs for a specific account",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "System"
+                ],
+                "summary": "Get Logs",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Account ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/model.APIResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/accounts/{id}/messages": {
+            "get": {
+                "description": "Get recent messages for a specific account",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Message"
+                ],
+                "summary": "Get Messages",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Account ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/model.APIResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/accounts/{id}/proxy/detect": {
+            "get": {
+                "description": "Detect if proxy is working",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Proxy"
+                ],
+                "summary": "Detect Proxy",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Account ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/model.APIResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/accounts/{id}/proxy/external-ip": {
+            "get": {
+                "description": "Get external IP via proxy",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Proxy"
+                ],
+                "summary": "Get External IP",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Account ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/model.APIResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/accounts/{id}/proxy/status": {
+            "get": {
+                "description": "Get proxy status for an account",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Proxy"
+                ],
+                "summary": "Get Proxy Status",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Account ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/model.APIResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/accounts/{id}/proxy/switch": {
+            "post": {
+                "description": "Switch proxy for an account",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Proxy"
+                ],
+                "summary": "Switch Proxy",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Account ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Proxy Config",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.ProxyConfig"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/model.APIResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/accounts/{id}/qr-code": {
+            "get": {
+                "description": "Get QR code for a specific account",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Get QR Code",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Account ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/model.APIResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/accounts/{id}/status": {
+            "get": {
+                "description": "Get status for a specific account",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Account"
+                ],
+                "summary": "Get Account Status",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Account ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/model.APIResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/accounts/{id}/stop": {
+            "post": {
+                "description": "Stop the worker process for an account",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Account"
+                ],
+                "summary": "Stop Account Service",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Account ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/model.APIResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/config": {
+            "get": {
+                "description": "Get current system configuration",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "System"
+                ],
+                "summary": "Get Config",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/model.APIResponse"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "description": "Update system configuration",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "System"
+                ],
+                "summary": "Update Config",
+                "parameters": [
+                    {
+                        "description": "Configuration",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/model.APIResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/health": {
+            "get": {
+                "description": "Check system health status",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "System"
+                ],
+                "summary": "Get Health Status",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/model.APIResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/phone-login": {
+            "post": {
+                "description": "Login with phone number",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Phone Login",
+                "parameters": [
+                    {
+                        "description": "Phone Login Request",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.PhoneLoginRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/model.APIResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/send-message": {
+            "post": {
+                "description": "Send a WhatsApp message",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Message"
+                ],
+                "summary": "Send Message",
+                "parameters": [
+                    {
+                        "description": "Message Request",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.MessageRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/model.APIResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/stats": {
+            "get": {
+                "description": "Get system statistics",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "System"
+                ],
+                "summary": "Get System Stats",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/model.APIResponse"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "model.APIResponse": {
+            "type": "object",
+            "properties": {
+                "data": {},
+                "error": {
+                    "type": "string"
+                },
+                "message": {
+                    "type": "string"
+                },
+                "success": {
+                    "type": "boolean"
+                }
+            }
+        },
+        "model.HardwareInfo": {
+            "type": "object",
+            "properties": {
+                "browser": {
+                    "type": "string"
+                },
+                "os": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.LoginRequest": {
+            "type": "object",
+            "required": [
+                "account_id"
+            ],
+            "properties": {
+                "account_id": {
+                    "type": "string"
+                },
+                "cache_login": {
+                    "type": "boolean"
+                },
+                "hardware_info": {
+                    "type": "object",
+                    "additionalProperties": true
+                },
+                "login_method": {
+                    "description": "qr, phone",
+                    "type": "string"
+                },
+                "phone": {
+                    "type": "string"
+                },
+                "proxy_config": {
+                    "$ref": "#/definitions/model.ProxyConfig"
+                }
+            }
+        },
+        "model.MessageRequest": {
+            "type": "object",
+            "required": [
+                "account_id",
+                "contact",
+                "message"
+            ],
+            "properties": {
+                "account_id": {
+                    "type": "string"
+                },
+                "contact": {
+                    "type": "string"
+                },
+                "message": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.PhoneLoginRequest": {
+            "type": "object",
+            "required": [
+                "login_phone"
+            ],
+            "properties": {
+                "hardware_info": {
+                    "$ref": "#/definitions/model.HardwareInfo"
+                },
+                "is_cache_login": {
+                    "type": "boolean"
+                },
+                "login_phone": {
+                    "type": "string"
+                },
+                "signin_type": {
+                    "description": "30: qr, 40: phone",
+                    "type": "integer"
+                },
+                "socks5": {
+                    "$ref": "#/definitions/model.ProxyConfig"
+                }
+            }
+        },
+        "model.ProxyConfig": {
+            "type": "object",
+            "properties": {
+                "ip": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string"
+                },
+                "port": {
+                    "type": "integer"
+                },
+                "region": {
+                    "type": "string"
+                },
+                "resource_code": {
+                    "type": "string"
+                },
+                "resource_name": {
+                    "type": "string"
+                },
+                "username": {
+                    "type": "string"
+                }
+            }
+        }
+    }
+}
