@@ -134,7 +134,7 @@ const WhatsAppControl = ({ selectedWorker, onWorkerSelect, onRefresh }) => {
   const handleAddContact = async (e) => {
     e.preventDefault();
     if (!selectedWorker || !addContactForm.phone) {
-      toast.error('请填写手机号');
+      toast.error(t('whatsapp.toast.enterPhone'));
       return;
     }
 
@@ -149,15 +149,15 @@ const WhatsAppControl = ({ selectedWorker, onWorkerSelect, onRefresh }) => {
       );
       
       if (response.data.success) {
-        toast.success('联系人添加成功');
+        toast.success(t('whatsapp.toast.contactAdded'));
         setAddContactForm({ phone: '', firstName: '', lastName: '' });
         loadContacts(); // 刷新列表
       } else {
-        toast.error(response.data.message || '添加联系人失败');
+        toast.error(response.data.message || t('whatsapp.toast.contactAddFailed'));
       }
     } catch (error) {
       console.error('添加联系人失败:', error);
-      toast.error('添加联系人请求失败');
+      toast.error(t('whatsapp.toast.contactAddRequestFailed'));
     } finally {
       setLoading(false);
     }
@@ -165,18 +165,18 @@ const WhatsAppControl = ({ selectedWorker, onWorkerSelect, onRefresh }) => {
 
   const handleStopWorker = async () => {
     if (!selectedWorker) return;
-    if (!confirm('确定要停止服务吗？停止后将无法接收消息。')) return;
+    if (!confirm(t('whatsapp.confirm.stopService'))) return;
 
     try {
       setLoading(true);
       const response = await workerService.stop(selectedWorker.id);
       if (response.data.success) {
-        toast.success('服务已停止');
+        toast.success(t('whatsapp.toast.serviceStopped'));
         checkLoginStatus(); // 刷新状态
       }
     } catch (error) {
       console.error('停止服务失败:', error);
-      toast.error('停止服务失败');
+      toast.error(t('whatsapp.toast.serviceStartFailed'));
     } finally {
       setLoading(false);
     }
@@ -196,15 +196,15 @@ const WhatsAppControl = ({ selectedWorker, onWorkerSelect, onRefresh }) => {
         });
         
         if (response.data.success) {
-            toast.success('服务启动指令已发送');
+            toast.success(t('whatsapp.toast.serviceStartSent'));
             // 开始轮询状态
             pollLoginStatus(selectedWorker.id);
         } else {
-            toast.error(response.data.message || '启动服务失败');
+            toast.error(response.data.message || t('whatsapp.toast.serviceStartFailed'));
         }
     } catch (error) {
         console.error('启动服务失败:', error);
-        toast.error('启动服务失败');
+        toast.error(t('whatsapp.toast.serviceStartRequestFailed'));
     } finally {
         setLoading(false);
     }
@@ -213,7 +213,7 @@ const WhatsAppControl = ({ selectedWorker, onWorkerSelect, onRefresh }) => {
   const handleCreateGroup = async (e) => {
     e.preventDefault();
     if (!selectedWorker || !groupForm.name || !groupForm.participants) {
-      toast.error('请填写群名称和成员');
+      toast.error(t('whatsapp.toast.groupNameMembersRequired'));
       return;
     }
     
@@ -221,7 +221,7 @@ const WhatsAppControl = ({ selectedWorker, onWorkerSelect, onRefresh }) => {
       setLoading(true);
       const participantList = groupForm.participants.split(/[,，]/).map(p => p.trim()).filter(p => p);
       if (participantList.length === 0) {
-        toast.error('请至少指定一个成员');
+        toast.error(t('whatsapp.toast.atLeastOneMember'));
         return;
       }
       
@@ -237,14 +237,14 @@ const WhatsAppControl = ({ selectedWorker, onWorkerSelect, onRefresh }) => {
       });
       
       if (response.data.success) {
-        toast.success(`群组创建成功: ${response.data.data?.gid?._serialized || 'OK'}`);
+        toast.success(`${t('whatsapp.toast.groupCreated')}: ${response.data.data?.gid?._serialized || 'OK'}`);
         setGroupForm({ ...groupForm, name: '', participants: '' });
       } else {
-        toast.error('创建群组失败');
+        toast.error(t('whatsapp.toast.groupCreateFailed'));
       }
     } catch (error) {
       console.error('创建群组失败:', error);
-      toast.error('创建群组请求失败');
+      toast.error(t('whatsapp.toast.groupCreateRequestFailed'));
     } finally {
       setLoading(false);
     }
@@ -253,7 +253,7 @@ const WhatsAppControl = ({ selectedWorker, onWorkerSelect, onRefresh }) => {
   const handleAddParticipants = async (e) => {
     e.preventDefault();
     if (!selectedWorker || !groupForm.targetGroupId || !groupForm.participants) {
-      toast.error('请填写群ID和成员');
+      toast.error(t('whatsapp.toast.groupIdMembersRequired'));
       return;
     }
     
@@ -273,14 +273,14 @@ const WhatsAppControl = ({ selectedWorker, onWorkerSelect, onRefresh }) => {
       });
       
       if (response.data.success) {
-        toast.success('成员添加成功');
+        toast.success(t('whatsapp.toast.membersAdded'));
         setGroupForm({ ...groupForm, participants: '' });
       } else {
-        toast.error('添加成员失败');
+        toast.error(t('whatsapp.toast.addMembersFailed'));
       }
     } catch (error) {
       console.error('添加成员失败:', error);
-      toast.error('添加成员请求失败');
+      toast.error(t('whatsapp.toast.addMembersRequestFailed'));
     } finally {
       setLoading(false);
     }
@@ -403,17 +403,17 @@ const WhatsAppControl = ({ selectedWorker, onWorkerSelect, onRefresh }) => {
     try {
       const response = await workerService.getDebugElements(selectedWorker.id);
       if (response.data.success) {
-        toast.success('元素检测成功');
+        toast.success(t('whatsapp.toast.elementDetectSuccess'));
         // 可以弹窗显示结果，或者在界面上显示
         const elements = response.data.data;
         const win = window.open('', '_blank');
         win.document.write('<pre>' + JSON.stringify(elements, null, 2) + '</pre>');
       } else {
-        toast.error('元素检测失败');
+        toast.error(t('whatsapp.toast.elementDetectFailed'));
       }
     } catch (error) {
       console.error('元素检测请求失败:', error);
-      toast.error('元素检测请求失败');
+      toast.error(t('whatsapp.toast.elementDetectRequestFailed'));
     }
   };
 
@@ -433,7 +433,7 @@ const WhatsAppControl = ({ selectedWorker, onWorkerSelect, onRefresh }) => {
   const handleLogin = async () => {
     // 验证手机号
     if (!loginForm.login_phone) {
-      toast.error('请输入手机号');
+      toast.error(t('whatsapp.toast.enterPhone'));
       return;
     }
 
@@ -464,7 +464,7 @@ const WhatsAppControl = ({ selectedWorker, onWorkerSelect, onRefresh }) => {
       const response = await masterService.phoneLogin(loginData);
       
       if (response.data.success) {
-        toast.success('登录流程已启动，Worker已创建/启动');
+        toast.success(t('whatsapp.toast.loginFlowStarted'));
         
         // 更新选中的Worker
         const account = response.data.data.account;
@@ -503,11 +503,11 @@ const WhatsAppControl = ({ selectedWorker, onWorkerSelect, onRefresh }) => {
         // 刷新全局Worker列表
         if (onRefresh) onRefresh();
       } else {
-        toast.error(response.data.message || '登录失败');
+        toast.error(response.data.message || t('whatsapp.toast.loginFailed'));
       }
     } catch (error) {
       console.error('登录失败:', error);
-      toast.error('登录请求失败: ' + (error.response?.data?.message || error.message));
+      toast.error(`${t('whatsapp.toast.loginRequestFailedPrefix')} ${error.response?.data?.message || error.message}`);
     } finally {
       setLoading(false);
     }
@@ -532,7 +532,7 @@ const WhatsAppControl = ({ selectedWorker, onWorkerSelect, onRefresh }) => {
           clearInterval(interval);
           setQrCode(null);
           setPairingCode(null);
-          toast.success('登录成功！');
+          toast.success(t('whatsapp.toast.loginSuccess'));
           loadContacts(targetId);
           loadMessages(targetId);
           // 强制刷新页面状态，确保登录框消失
@@ -556,18 +556,18 @@ const WhatsAppControl = ({ selectedWorker, onWorkerSelect, onRefresh }) => {
       const response = await workerService.logout(selectedWorker.id);
       
       if (response.data.success) {
-        toast.success('退出登录成功');
+        toast.success(t('whatsapp.toast.logoutSuccess'));
         setLoginStatus(null);
         setContacts([]);
         setMessages([]);
         setQrCode(null);
         setPairingCode(null);
       } else {
-        toast.error(response.data.message || '退出登录失败');
+        toast.error(response.data.message || t('whatsapp.toast.logoutFailed'));
       }
     } catch (error) {
       console.error('退出登录失败:', error);
-      toast.error('退出登录失败');
+      toast.error(t('whatsapp.toast.logoutFailed'));
     } finally {
       setLoading(false);
     }
@@ -575,18 +575,18 @@ const WhatsAppControl = ({ selectedWorker, onWorkerSelect, onRefresh }) => {
 
   const handleCloseWorker = async () => {
     if (!selectedWorker) return;
-    if (!confirm('确定要关闭这个Worker实例吗？这将停止服务。')) return;
+    if (!confirm(t('whatsapp.confirm.closeWorker'))) return;
 
     try {
       setLoading(true);
       const response = await workerService.close(selectedWorker.id);
       if (response.data.success) {
-        toast.success('Worker已关闭');
+        toast.success(t('whatsapp.toast.workerClosed'));
         setLoginStatus(null);
       }
     } catch (error) {
       console.error('关闭Worker失败:', error);
-      toast.error('关闭Worker失败');
+      toast.error(t('whatsapp.toast.closeWorkerFailed'));
     } finally {
       setLoading(false);
     }
@@ -606,7 +606,7 @@ const WhatsAppControl = ({ selectedWorker, onWorkerSelect, onRefresh }) => {
       }
     } catch (error) {
       console.error('加载联系人失败:', error);
-      toast.error('加载联系人失败');
+      toast.error(t('whatsapp.toast.loadContactsFailed'));
     } finally {
       setLoading(false);
     }
@@ -626,7 +626,7 @@ const WhatsAppControl = ({ selectedWorker, onWorkerSelect, onRefresh }) => {
       }
     } catch (error) {
       console.error('加载消息失败:', error);
-      toast.error('加载消息失败');
+      toast.error(t('whatsapp.toast.loadMessagesFailed'));
     } finally {
       setLoading(false);
     }
@@ -635,7 +635,7 @@ const WhatsAppControl = ({ selectedWorker, onWorkerSelect, onRefresh }) => {
   const handleSendMessage = async (e) => {
     e.preventDefault();
     if (!selectedWorker || !messageForm.contact || !messageForm.message) {
-      toast.error('请填写完整信息');
+      toast.error(t('whatsapp.toast.fillAllFields'));
       return;
     }
 
@@ -648,15 +648,15 @@ const WhatsAppControl = ({ selectedWorker, onWorkerSelect, onRefresh }) => {
       });
       
       if (response.data.success) {
-        toast.success('消息发送成功');
+        toast.success(t('whatsapp.toast.messageSendSuccess'));
         setMessageForm({ contact: '', message: '' });
         loadMessages(); // 刷新消息列表
       } else {
-        toast.error(response.data.message || '消息发送失败');
+        toast.error(response.data.message || t('whatsapp.toast.messageSendFailed'));
       }
     } catch (error) {
       console.error('发送消息失败:', error);
-      toast.error('发送消息失败');
+      toast.error(t('whatsapp.toast.messageSendFailed'));
     } finally {
       setLoading(false);
     }
@@ -678,20 +678,19 @@ const WhatsAppControl = ({ selectedWorker, onWorkerSelect, onRefresh }) => {
     switch (status) {
       case 'logged_in':
       case 'connected':
-        return { text: '已登录', className: 'text-success', icon: CheckCircle, subText: 'WhatsApp 在线' };
+        return { status, text: t('whatsapp.status.loggedIn'), className: 'text-success', icon: CheckCircle, subText: t('whatsapp.status.sub.whatsappOnline') };
       case 'running':
-        // 运行中但未登录
-        return { text: '运行中', className: 'text-info', icon: Activity, subText: '等待登录' };
+        return { status, text: t('whatsapp.status.running'), className: 'text-info', icon: Activity, subText: t('whatsapp.status.sub.waitingLogin') };
       case 'stopped':
-        return { text: '已停止', className: 'text-error', icon: AlertCircle, subText: '服务已关闭' };
+        return { status, text: t('whatsapp.status.stopped'), className: 'text-error', icon: AlertCircle, subText: t('whatsapp.status.sub.serviceClosed') };
       case 'waiting_for_qr':
-        return { text: '等待扫码', className: 'text-warning', icon: QrCode, subText: '请扫描二维码' };
+        return { status, text: t('whatsapp.status.waitingQr'), className: 'text-warning', icon: QrCode, subText: t('whatsapp.status.sub.scanQr') };
       case 'waiting_for_phone':
-        return { text: '等待验证', className: 'text-info', icon: Phone, subText: '请输入验证码' };
+        return { status, text: t('whatsapp.status.waitingPhone'), className: 'text-info', icon: Phone, subText: t('whatsapp.status.sub.enterCode') };
       case 'creating':
-        return { text: '启动中', className: 'text-info', icon: Clock, subText: '正在初始化...' };
+        return { status, text: t('whatsapp.status.creating'), className: 'text-info', icon: Clock, subText: t('whatsapp.status.sub.initializing') };
       default:
-        return { text: status || '未知', className: 'text-text-secondary', icon: AlertCircle, subText: '检查连接' };
+        return { status, text: status || t('whatsapp.status.unknown'), className: 'text-text-secondary', icon: AlertCircle, subText: t('whatsapp.status.sub.checkConnection') };
     }
   };
 
@@ -941,7 +940,7 @@ const WhatsAppControl = ({ selectedWorker, onWorkerSelect, onRefresh }) => {
           </button>
           
           {/* 启动/停止控制按钮 */}
-          {statusDisplay.text === '已停止' ? (
+          {statusDisplay.status === 'stopped' ? (
              <button
                 onClick={handleStartWorker}
                 disabled={loading}
@@ -966,12 +965,12 @@ const WhatsAppControl = ({ selectedWorker, onWorkerSelect, onRefresh }) => {
       {/* 功能标签页 */}
       <div className="flex space-x-2 bg-surface p-1.5 rounded-xl shadow-sm border border-border overflow-x-auto">
         {[
-          { id: 'login', label: '登录管理', icon: LogIn },
-          { id: 'proxy', label: '代理设置', icon: Globe },
-          { id: 'messages', label: '消息管理', icon: MessageSquare },
-          { id: 'groups', label: '群组管理', icon: Users },
-          { id: 'contacts', label: '联系人', icon: Users },
-          { id: 'debug', label: '调试工具', icon: Terminal },
+          { id: 'login', label: t('whatsapp.tabs.login'), icon: LogIn },
+          { id: 'proxy', label: t('whatsapp.tabs.proxy'), icon: Globe },
+          { id: 'messages', label: t('whatsapp.tabs.messages'), icon: MessageSquare },
+          { id: 'groups', label: t('whatsapp.tabs.groups'), icon: Users },
+          { id: 'contacts', label: t('whatsapp.tabs.contacts'), icon: Users },
+          { id: 'debug', label: t('whatsapp.tabs.debug'), icon: Terminal },
         ].map(tab => (
           <button
             key={tab.id}

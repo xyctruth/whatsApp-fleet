@@ -54,7 +54,7 @@ function App() {
       console.log('✅ 系统健康检查完成');
     } catch (error) {
       console.error('❌ 系统健康检查失败:', error);
-      setSystemHealth({ success: false, message: '连接失败' });
+      setSystemHealth({ success: false, message: t('system.connectionFailed') });
     }
   };
 
