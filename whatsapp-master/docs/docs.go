@@ -215,10 +215,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
+                            "$ref": "#/definitions/model.AddContactRequest"
                         }
                     }
                 ],
@@ -731,6 +728,35 @@ const docTemplate = `{
                 }
             }
         },
+        "/accounts/{id}/restart": {
+            "post": {
+                "description": "Restart the worker container/process for an account (e.g., after image update)",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Account"
+                ],
+                "summary": "Restart Account Worker",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Account ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/model.APIResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/accounts/{id}/status": {
             "get": {
                 "description": "Get status for a specific account",
@@ -949,6 +975,26 @@ const docTemplate = `{
                     }
                 }
             }
+        },
+        "/system/restart-workers": {
+            "post": {
+                "description": "Restart all active workers (e.g. after image update)",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "System"
+                ],
+                "summary": "Restart All Workers",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/model.APIResponse"
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
@@ -964,6 +1010,23 @@ const docTemplate = `{
                 },
                 "success": {
                     "type": "boolean"
+                }
+            }
+        },
+        "model.AddContactRequest": {
+            "type": "object",
+            "required": [
+                "phone"
+            ],
+            "properties": {
+                "firstName": {
+                    "type": "string"
+                },
+                "lastName": {
+                    "type": "string"
+                },
+                "phone": {
+                    "type": "string"
                 }
             }
         },

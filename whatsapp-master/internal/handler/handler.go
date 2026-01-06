@@ -882,7 +882,7 @@ func (h *Handler) CloseAccount(c *gin.Context) {
 // @Accept json
 // @Produce json
 // @Param id path string true "Account ID"
-// @Param request body map[string]string true "Contact Info"
+// @Param request body model.AddContactRequest true "Contact Info"
 // @Success 200 {object} model.APIResponse
 // @Router /accounts/{id}/contacts [post]
 func (h *Handler) AddContact(c *gin.Context) {
@@ -1040,8 +1040,8 @@ func (h *Handler) SetupRoutes() *gin.Engine {
 		api.GET("/config", h.GetConfig)
 		api.PUT("/config", h.UpdateConfig)
 
-	// 系统管理
-	api.POST("/system/restart-workers", h.RestartWorkers)
+		// 系统管理
+		api.POST("/system/restart-workers", h.RestartWorkers)
 	}
 
 	// Swagger文档 (移回根路径以便更好兼容gin-swagger默认行为)

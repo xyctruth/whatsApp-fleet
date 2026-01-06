@@ -67,6 +67,13 @@ type MessageRequest struct {
 	Message   string `json:"message" binding:"required"`
 }
 
+// AddContactRequest 添加联系人请求模型
+type AddContactRequest struct {
+	Phone     string `json:"phone" binding:"required"`
+	FirstName string `json:"firstName,omitempty"`
+	LastName  string `json:"lastName,omitempty"`
+}
+
 // APIResponse 统一API响应模型
 type APIResponse struct {
 	Success bool        `json:"success"`

@@ -10,6 +10,17 @@ definitions:
       success:
         type: boolean
     type: object
+  model.AddContactRequest:
+    properties:
+      firstName:
+        type: string
+      lastName:
+        type: string
+      phone:
+        type: string
+    required:
+    - phone
+    type: object
   model.HardwareInfo:
     properties:
       browser:
@@ -220,9 +231,7 @@ paths:
         name: request
         required: true
         schema:
-          additionalProperties:
-            type: string
-          type: object
+          $ref: '#/definitions/model.AddContactRequest'
       produces:
       - application/json
       responses:
@@ -561,6 +570,26 @@ paths:
       summary: Get QR Code
       tags:
       - Auth
+  /accounts/{id}/restart:
+    post:
+      description: Restart the worker container/process for an account (e.g., after
+        image update)
+      parameters:
+      - description: Account ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.APIResponse'
+      summary: Restart Account Worker
+      tags:
+      - Account
   /accounts/{id}/status:
     get:
       description: Get status for a specific account
@@ -702,6 +731,19 @@ paths:
           schema:
             $ref: '#/definitions/model.APIResponse'
       summary: Get System Stats
+      tags:
+      - System
+  /system/restart-workers:
+    post:
+      description: Restart all active workers (e.g. after image update)
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.APIResponse'
+      summary: Restart All Workers
       tags:
       - System
 swagger: "2.0"
