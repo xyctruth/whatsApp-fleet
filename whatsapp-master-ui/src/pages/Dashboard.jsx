@@ -120,8 +120,8 @@ const Dashboard = ({ systemHealth, workers, onRefresh }) => {
           <div className="flex items-center">
             <AlertCircle className="w-5 h-5 text-red-500 mr-2" />
             <div>
-              <h3 className="text-sm font-medium text-red-800">Connection error</h3>
-              <p className="text-sm text-red-700 mt-1">Cannot connect to Master service</p>
+              <h3 className="text-sm font-medium text-red-800">{t('dashboard.alert.connectionError')}</h3>
+              <p className="text-sm text-red-700 mt-1">{t('dashboard.alert.connectMasterFailed')}</p>
             </div>
           </div>
         </div>
@@ -132,20 +132,20 @@ const Dashboard = ({ systemHealth, workers, onRefresh }) => {
         <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 shadow-sm">
           <div className="flex items-center mb-3">
             <AlertCircle className="w-5 h-5 text-yellow-600 mr-2" />
-            <h3 className="text-lg font-semibold text-yellow-800">🔐 待处理配对码</h3>
+            <h3 className="text-lg font-semibold text-yellow-800">🔐 {t('dashboard.pairing.pendingTitle')}</h3>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {Object.entries(pairingCodes).map(([workerId, code]) => (
               <div key={workerId} className="bg-white p-4 rounded-lg shadow-sm border border-yellow-100 relative overflow-hidden">
                 <div className="absolute top-0 right-0 w-16 h-16 bg-yellow-100 rounded-bl-full -mr-8 -mt-8 z-0"></div>
                 <div className="relative z-10">
-                  <p className="text-sm font-medium text-gray-500 mb-1">账号 ID: {workerId}</p>
+                  <p className="text-sm font-medium text-gray-500 mb-1">{t('dashboard.pairing.accountId')}: {workerId}</p>
                   <p className="text-2xl font-bold text-yellow-600 tracking-wider font-mono">
                     {code ? code.match(/.{1,4}/g).join('-') : ''}
                   </p>
                   <p className="text-xs text-gray-400 mt-2 flex items-center">
                     <span className="w-1.5 h-1.5 bg-yellow-500 rounded-full mr-1.5 animate-pulse"></span>
-                    请在手机 WhatsApp 上输入此码
+                    {t('dashboard.pairing.enterOnPhone')}
                   </p>
                 </div>
               </div>
@@ -157,28 +157,28 @@ const Dashboard = ({ systemHealth, workers, onRefresh }) => {
       {/* 统计卡片 */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <StatCard
-          title="总Worker数量"
+          title={t('dashboard.stats.totalWorkers')}
           value={workers.length}
           icon={Server}
           color="bg-blue-500"
           change={5}
         />
         <StatCard
-          title="在线Worker"
+          title={t('dashboard.stats.onlineWorkers')}
           value={getWorkerStatusCount('online')}
           icon={Activity}
           color="bg-green-500"
           change={2}
         />
         <StatCard
-          title="今日消息"
+          title={t('dashboard.stats.todayMessages')}
           value={stats?.todayMessages || 0}
           icon={MessageSquare}
           color="bg-whatsapp-green"
           change={12}
         />
         <StatCard
-          title="活跃联系人"
+          title={t('dashboard.stats.activeContacts')}
           value={stats?.activeContacts || 0}
           icon={Users}
           color="bg-purple-500"
@@ -223,29 +223,29 @@ const Dashboard = ({ systemHealth, workers, onRefresh }) => {
 
         {/* 系统信息 */}
         <div className="card">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">系统信息</h3>
+          <h3 className="text-lg font-semibold text-gray-900 mb-4">{t('dashboard.systemInfo.title')}</h3>
           <div className="space-y-3">
             <div className="flex justify-between">
-              <span className="text-gray-600">Master服务</span>
+              <span className="text-gray-600">{t('dashboard.systemInfo.master')}</span>
               <span className={`font-medium ${
                 systemHealth?.success ? 'text-green-600' : 'text-red-600'
               }`}>
-                {systemHealth?.success ? '正常运行' : '连接失败'}
+                {systemHealth?.success ? t('dashboard.systemInfo.running') : t('dashboard.systemInfo.failed')}
               </span>
             </div>
             <div className="flex justify-between">
-              <span className="text-gray-600">系统版本</span>
+              <span className="text-gray-600">{t('dashboard.systemInfo.version')}</span>
               <span className="font-medium text-gray-900">v1.0.0</span>
             </div>
             <div className="flex justify-between">
-              <span className="text-gray-600">启动时间</span>
+              <span className="text-gray-600">{t('dashboard.systemInfo.startTime')}</span>
               <span className="font-medium text-gray-900">
                 {new Date().toLocaleDateString()}
               </span>
             </div>
             <div className="flex justify-between">
-              <span className="text-gray-600">API状态</span>
-              <span className="font-medium text-green-600">正常</span>
+              <span className="text-gray-600">{t('dashboard.systemInfo.apiStatus')}</span>
+              <span className="font-medium text-green-600">{t('dashboard.systemInfo.apiNormal')}</span>
             </div>
           </div>
         </div>
@@ -253,7 +253,7 @@ const Dashboard = ({ systemHealth, workers, onRefresh }) => {
 
       {/* 最近活动 */}
       <div className="card">
-        <h3 className="text-lg font-semibold text-gray-900 mb-4">最近活动</h3>
+        <h3 className="text-lg font-semibold text-gray-900 mb-4">{t('dashboard.recentActivity.title')}</h3>
         <div className="space-y-3">
           {[
             { time: '2分钟前', action: 'Worker-001 成功发送消息到联系人 张三', type: 'success' },

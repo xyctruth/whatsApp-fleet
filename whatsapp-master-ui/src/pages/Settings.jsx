@@ -90,7 +90,7 @@ const Settings = ({ systemHealth, onRefresh }) => {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">{t('sidebar.menu.settings')}</h1>
-          <p className="text-gray-600">Configure system and WhatsApp settings</p>
+          <p className="text-gray-600">{t('settings.subtitle')}</p>
         </div>
         <div className="flex space-x-3">
           <button
@@ -110,7 +110,7 @@ const Settings = ({ systemHealth, onRefresh }) => {
             className="btn-primary flex items-center space-x-2"
           >
             {saving ? <LoadingSpinner size="small" /> : <Save className="w-4 h-4" />}
-            <span>Save Config</span>
+            <span>{t('settings.saveConfig')}</span>
           </button>
         </div>
       </div>
@@ -119,30 +119,30 @@ const Settings = ({ systemHealth, onRefresh }) => {
       <div className="card">
         <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
           <Database className="w-5 h-5 mr-2" />
-          系统状态
+          {t('settings.systemStatus.title')}
         </h3>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           <div className="text-center p-4 bg-gray-50 rounded-lg">
             <div className={`text-2xl font-bold ${
               systemHealth?.success ? 'text-green-600' : 'text-red-600'
             }`}>
-              {systemHealth?.success ? '正常' : '异常'}
+              {systemHealth?.success ? t('settings.systemStatus.ok') : t('settings.systemStatus.abnormal')}
             </div>
-            <div className="text-sm text-gray-600">Master服务</div>
+            <div className="text-sm text-gray-600">{t('settings.systemStatus.master')}</div>
           </div>
           <div className="text-center p-4 bg-gray-50 rounded-lg">
             <div className="text-2xl font-bold text-blue-600">v1.0.0</div>
-            <div className="text-sm text-gray-600">系统版本</div>
+            <div className="text-sm text-gray-600">{t('settings.systemStatus.version')}</div>
           </div>
           <div className="text-center p-4 bg-gray-50 rounded-lg">
             <div className="text-2xl font-bold text-purple-600">
               {new Date().toLocaleDateString()}
             </div>
-            <div className="text-sm text-gray-600">启动时间</div>
+            <div className="text-sm text-gray-600">{t('settings.systemStatus.startTime')}</div>
           </div>
           <div className="text-center p-4 bg-gray-50 rounded-lg">
-            <div className="text-2xl font-bold text-orange-600">正常</div>
-            <div className="text-sm text-gray-600">API状态</div>
+            <div className="text-2xl font-bold text-orange-600">{t('settings.systemStatus.apiNormal')}</div>
+            <div className="text-sm text-gray-600">{t('settings.systemStatus.apiStatus')}</div>
           </div>
         </div>
       </div>
@@ -152,12 +152,12 @@ const Settings = ({ systemHealth, onRefresh }) => {
         <div className="card">
           <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
             <SettingsIcon className="w-5 h-5 mr-2" />
-            系统配置
+            {t('settings.systemConfig.title')}
           </h3>
           <div className="space-y-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                最大Worker数量
+                {t('settings.systemConfig.maxWorkers')}
               </label>
               <input
                 type="number"
@@ -171,7 +171,7 @@ const Settings = ({ systemHealth, onRefresh }) => {
             
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                日志级别
+                {t('settings.systemConfig.logLevel')}
               </label>
               <select
                 value={config.system.log_level}
@@ -187,7 +187,7 @@ const Settings = ({ systemHealth, onRefresh }) => {
             
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                清理间隔 (秒)
+                {t('settings.systemConfig.cleanupInterval')}
               </label>
               <input
                 type="number"
@@ -207,7 +207,7 @@ const Settings = ({ systemHealth, onRefresh }) => {
                 className="mr-2"
               />
               <label htmlFor="auto_restart" className="text-sm font-medium text-gray-700">
-                自动重启失败的Worker
+                {t('settings.systemConfig.autoRestart')}
               </label>
             </div>
           </div>
@@ -217,12 +217,12 @@ const Settings = ({ systemHealth, onRefresh }) => {
         <div className="card">
           <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
             <Network className="w-5 h-5 mr-2" />
-            WhatsApp配置
+            {t('settings.whatsappConfig.title')}
           </h3>
           <div className="space-y-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                消息超时 (毫秒)
+                {t('settings.whatsappConfig.messageTimeout')}
               </label>
               <input
                 type="number"
@@ -236,7 +236,7 @@ const Settings = ({ systemHealth, onRefresh }) => {
             
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                登录超时 (毫秒)
+                {t('settings.whatsappConfig.loginTimeout')}
               </label>
               <input
                 type="number"
@@ -250,7 +250,7 @@ const Settings = ({ systemHealth, onRefresh }) => {
             
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                重试次数
+                {t('settings.whatsappConfig.retryAttempts')}
               </label>
               <input
                 type="number"
@@ -271,7 +271,7 @@ const Settings = ({ systemHealth, onRefresh }) => {
                 className="mr-2"
               />
               <label htmlFor="auto_logout_inactive" className="text-sm font-medium text-gray-700">
-                自动登出非活跃账号
+                {t('settings.whatsappConfig.autoLogoutInactive')}
               </label>
             </div>
           </div>
@@ -280,11 +280,11 @@ const Settings = ({ systemHealth, onRefresh }) => {
 
       {/* API配置 */}
       <div className="card">
-        <h3 className="text-lg font-semibold text-gray-900 mb-4">API配置</h3>
+        <h3 className="text-lg font-semibold text-gray-900 mb-4">{t('settings.apiConfig.title')}</h3>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              速率限制 (请求/分钟)
+              {t('settings.apiConfig.rateLimit')}
             </label>
             <input
               type="number"
@@ -304,7 +304,7 @@ const Settings = ({ systemHealth, onRefresh }) => {
               className="mr-2"
             />
             <label htmlFor="cors_enabled" className="text-sm font-medium text-gray-700">
-              启用CORS
+              {t('settings.apiConfig.enableCors')}
             </label>
           </div>
           
@@ -317,7 +317,7 @@ const Settings = ({ systemHealth, onRefresh }) => {
               className="mr-2"
             />
             <label htmlFor="auth_required" className="text-sm font-medium text-gray-700">
-              需要身份验证
+              {t('settings.apiConfig.authRequired')}
             </label>
           </div>
         </div>
@@ -325,25 +325,25 @@ const Settings = ({ systemHealth, onRefresh }) => {
 
       {/* 危险操作 */}
       <div className="card border-red-200">
-        <h3 className="text-lg font-semibold text-red-600 mb-4">危险操作</h3>
+        <h3 className="text-lg font-semibold text-red-600 mb-4">{t('settings.danger.title')}</h3>
         <div className="space-y-3">
           <div className="flex items-center justify-between p-3 bg-red-50 rounded-lg">
             <div>
-              <h4 className="font-medium text-red-800">重置所有配置</h4>
-              <p className="text-sm text-red-600">将所有配置恢复为默认值</p>
+              <h4 className="font-medium text-red-800">{t('settings.danger.resetAll')}</h4>
+              <p className="text-sm text-red-600">{t('settings.danger.resetAllDesc')}</p>
             </div>
             <button className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 transition-colors">
-              重置配置
+              {t('settings.danger.resetBtn')}
             </button>
           </div>
           
           <div className="flex items-center justify-between p-3 bg-red-50 rounded-lg">
             <div>
-              <h4 className="font-medium text-red-800">清除所有数据</h4>
-              <p className="text-sm text-red-600">删除所有Worker和消息数据</p>
+              <h4 className="font-medium text-red-800">{t('settings.danger.clearAll')}</h4>
+              <p className="text-sm text-red-600">{t('settings.danger.clearAllDesc')}</p>
             </div>
             <button className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 transition-colors">
-              清除数据
+              {t('settings.danger.clearBtn')}
             </button>
           </div>
         </div>

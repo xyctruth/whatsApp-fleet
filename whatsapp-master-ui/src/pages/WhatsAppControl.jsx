@@ -210,6 +210,23 @@ const WhatsAppControl = ({ selectedWorker, onWorkerSelect, onRefresh }) => {
     }
   };
 
+  const handleRestartUpdate = async () => {
+    if (!selectedWorker) return;
+    try {
+      setLoading(true);
+      const response = await workerService.restart(selectedWorker.id);
+      if (response.data.success) {
+        toast.success(t('whatsapp.toast.restartTriggered'));
+        checkLoginStatus();
+      } else {
+        toast.error(response.data.message || t('whatsapp.toast.restartFailed'));
+      }
+    } catch {
+      toast.error(t('whatsapp.toast.restartRequestFailed'));
+    } finally {
+      setLoading(false);
+    }
+  };
   const handleCreateGroup = async (e) => {
     e.preventDefault();
     if (!selectedWorker || !groupForm.name || !groupForm.participants) {
@@ -350,14 +367,14 @@ const WhatsAppControl = ({ selectedWorker, onWorkerSelect, onRefresh }) => {
       });
       
       if (response.data.success) {
-        toast.success('代理切换成功');
+        toast.success(t('whatsapp.toast.proxySwitchSuccess'));
         checkProxyStatus();
       } else {
-        toast.error('代理切换失败');
+        toast.error(t('whatsapp.toast.proxySwitchFailed'));
       }
     } catch (error) {
       console.error('代理切换请求失败:', error);
-      toast.error('代理切换请求失败');
+      toast.error(t('whatsapp.toast.proxySwitchRequestFailed'));
     } finally {
       setLoading(false);
     }
@@ -370,14 +387,14 @@ const WhatsAppControl = ({ selectedWorker, onWorkerSelect, onRefresh }) => {
       const response = await workerService.detectProxy(selectedWorker.id);
       if (response.data.success) {
         const payload = response.data.data ?? response.data;
-        let message = '代理检测成功';
+        let message = t('whatsapp.toast.proxyDetectSuccess');
         if (payload) {
           if (typeof payload === 'string') {
             message += `: ${payload}`;
           } else {
             const parts = [];
             if (payload.detected !== undefined) {
-              parts.push(payload.detected ? '已检测到代理' : '未检测到代理');
+              parts.push(payload.detected ? t('whatsapp.proxy.enabled') : t('whatsapp.proxy.disabled'));
             }
             if (payload.ip) {
               parts.push(payload.ip);
@@ -388,11 +405,11 @@ const WhatsAppControl = ({ selectedWorker, onWorkerSelect, onRefresh }) => {
         }
         toast.success(message);
       } else {
-        toast.error('代理检测失败');
+        toast.error(t('whatsapp.toast.proxyDetectFailed'));
       }
     } catch (error) {
       console.error('代理检测请求失败:', error);
-      toast.error('代理检测请求失败');
+      toast.error(t('whatsapp.toast.proxyDetectRequestFailed'));
     } finally {
       setLoading(false);
     }
@@ -426,7 +443,7 @@ const WhatsAppControl = ({ selectedWorker, onWorkerSelect, onRefresh }) => {
       win.document.write(response.data);
     } catch (error) {
       console.error('获取调试HTML失败:', error);
-      toast.error('获取调试HTML失败');
+      toast.error(t('whatsapp.toast.debugHtmlFailed'));
     }
   };
 
@@ -705,9 +722,9 @@ const WhatsAppControl = ({ selectedWorker, onWorkerSelect, onRefresh }) => {
       <div className="space-y-6 animate-fade-in">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-bold text-text-main">连接新账号</h1>
+            <h1 className="text-2xl font-bold text-text-main">{t('whatsapp.header.connectNew')}</h1>
             <p className="text-text-secondary mt-1">
-              创建一个新的WhatsApp Worker实例并登录
+              {t('whatsapp.header.createNewSubtitle')}
             </p>
           </div>
         </div>
@@ -717,9 +734,9 @@ const WhatsAppControl = ({ selectedWorker, onWorkerSelect, onRefresh }) => {
             <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
               <Plus className="w-8 h-8 text-primary" />
             </div>
-            <h2 className="text-xl font-bold text-text-main">开始新连接</h2>
+            <h2 className="text-xl font-bold text-text-main">{t('whatsapp.header.createNew')}</h2>
             <p className="text-text-secondary mt-2">
-              输入手机号以创建新的Worker实例。系统将自动分配资源。
+              {t('whatsapp.header.createNewDesc')}
             </p>
           </div>
 
@@ -735,7 +752,7 @@ const WhatsAppControl = ({ selectedWorker, onWorkerSelect, onRefresh }) => {
                 }`}
               >
                 <Phone className="w-4 h-4" />
-                <span>手机号登录</span>
+                <span>{t('whatsapp.login.phoneMethod')}</span>
               </button>
               <button
                 onClick={() => setLoginForm({...loginForm, signin_type: 30})}
@@ -746,7 +763,7 @@ const WhatsAppControl = ({ selectedWorker, onWorkerSelect, onRefresh }) => {
                 }`}
               >
                 <QrCode className="w-4 h-4" />
-                <span>二维码登录</span>
+                <span>{t('whatsapp.login.qrMethod')}</span>
               </button>
             </div>
 
@@ -754,17 +771,17 @@ const WhatsAppControl = ({ selectedWorker, onWorkerSelect, onRefresh }) => {
             {loginForm.signin_type === 40 && (
               <div>
                 <label className="block text-sm font-medium text-text-secondary mb-2">
-                  手机号
+                  {t('whatsapp.login.phoneLabel')}
                 </label>
                 <input
                   type="text"
                   value={loginForm.login_phone}
                   onChange={(e) => setLoginForm({...loginForm, login_phone: e.target.value})}
-                  placeholder="请输入手机号 (例如: 8613800138000)"
+                  placeholder={t('whatsapp.login.phonePlaceholder')}
                   className="input-field w-full text-lg"
                 />
                 <p className="mt-2 text-xs text-text-secondary">
-                  请确保手机号格式正确，包含国家代码（不带+号）
+                  {t('whatsapp.login.phoneHint')}
                 </p>
               </div>
             )}
@@ -778,37 +795,37 @@ const WhatsAppControl = ({ selectedWorker, onWorkerSelect, onRefresh }) => {
                   onChange={(e) => setLoginForm({...loginForm, is_cache_login: e.target.checked})}
                   className="mr-2 rounded text-primary focus:ring-primary"
                 />
-                尝试复用旧会话（缓存登录）
+                {t('whatsapp.login.cache')}
               </label>
               
               <button
                 onClick={() => setLoginForm({...loginForm, enableProxy: !loginForm.enableProxy})}
                 className="text-sm text-primary hover:text-primary-dark transition-colors"
               >
-                {loginForm.enableProxy ? '禁用代理设置' : '启用代理设置'}
+                {loginForm.enableProxy ? t('whatsapp.login.disableProxy') : t('whatsapp.login.enableProxy')}
               </button>
             </div>
 
             {/* 代理设置 */}
             {loginForm.enableProxy && (
               <div className="p-4 bg-bg rounded-lg space-y-4 border border-border">
-                <h4 className="font-medium text-text-main text-sm">SOCKS5 代理设置</h4>
+                <h4 className="font-medium text-text-main text-sm">{t('whatsapp.login.proxyTitle')}</h4>
                 
                 {/* 快捷输入区域 */}
                 <div className="bg-gray-50 p-3 rounded border border-gray-200">
-                    <label className="block text-xs font-medium text-gray-700 mb-1">快捷输入 (Host,Port,User,Pass)</label>
+                    <label className="block text-xs font-medium text-gray-700 mb-1">{t('whatsapp.login.quickLabel')}</label>
                     <input
                         type="text"
                         value={loginForm.quickInput}
                         onChange={handleLoginQuickInputChange}
-                        placeholder="例如: 143.14.74.139,8886,user,pass"
+                        placeholder={t('whatsapp.login.quickPlaceholder')}
                         className="input-field w-full font-mono text-sm py-1.5"
                     />
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-xs text-text-secondary mb-1">IP地址</label>
+                    <label className="block text-xs text-text-secondary mb-1">{t('whatsapp.login.ip')}</label>
                     <input
                       type="text"
                       value={loginForm.socks5.ip}
@@ -821,7 +838,7 @@ const WhatsAppControl = ({ selectedWorker, onWorkerSelect, onRefresh }) => {
                     />
                   </div>
                   <div>
-                    <label className="block text-xs text-text-secondary mb-1">端口</label>
+                    <label className="block text-xs text-text-secondary mb-1">{t('whatsapp.login.port')}</label>
                     <input
                       type="text"
                       value={loginForm.socks5.port}
@@ -834,7 +851,7 @@ const WhatsAppControl = ({ selectedWorker, onWorkerSelect, onRefresh }) => {
                     />
                   </div>
                   <div>
-                    <label className="block text-xs text-text-secondary mb-1">用户名</label>
+                    <label className="block text-xs text-text-secondary mb-1">{t('whatsapp.login.user')}</label>
                     <input
                       type="text"
                       value={loginForm.socks5.user}
@@ -846,7 +863,7 @@ const WhatsAppControl = ({ selectedWorker, onWorkerSelect, onRefresh }) => {
                     />
                   </div>
                   <div>
-                    <label className="block text-xs text-text-secondary mb-1">密码</label>
+                    <label className="block text-xs text-text-secondary mb-1">{t('whatsapp.login.pwd')}</label>
                     <input
                       type="password"
                       value={loginForm.socks5.pwd}
@@ -871,12 +888,12 @@ const WhatsAppControl = ({ selectedWorker, onWorkerSelect, onRefresh }) => {
                 {loading ? (
                   <>
                     <LoadingSpinner size="small" color="white" />
-                    <span>处理中...</span>
+                    <span>{t('common.start')}</span>
                   </>
                 ) : (
                   <>
                     <LogIn className="w-5 h-5" />
-                    <span>创建并连接</span>
+                    <span>{t('whatsapp.login.createAndConnect')}</span>
                   </>
                 )}
               </button>
@@ -886,7 +903,7 @@ const WhatsAppControl = ({ selectedWorker, onWorkerSelect, onRefresh }) => {
             {qrCode && (
               <div className="mt-6 p-6 bg-white border-2 border-dashed border-border rounded-xl text-center animate-fade-in">
                 <QrCode className="w-8 h-8 text-primary mx-auto mb-3" />
-                <p className="text-sm text-text-secondary mb-4">请使用WhatsApp扫描下方二维码</p>
+                <p className="text-sm text-text-secondary mb-4">{t('whatsapp.login.enterQrBelow')}</p>
                 <img src={qrCode} alt="QR Code" className="mx-auto max-w-xs shadow-lg rounded-lg" />
               </div>
             )}
@@ -895,12 +912,12 @@ const WhatsAppControl = ({ selectedWorker, onWorkerSelect, onRefresh }) => {
             {pairingCode && (
               <div className="mt-6 p-6 bg-primary/5 border-2 border-dashed border-primary/20 rounded-xl text-center animate-fade-in">
                 <Code className="w-8 h-8 text-primary mx-auto mb-3" />
-                <p className="text-sm text-text-secondary mb-2">在WhatsApp输入以下配对码</p>
+                <p className="text-sm text-text-secondary mb-2">{t('whatsapp.login.enterPairingCode')}</p>
                 <div className="text-3xl font-mono font-bold text-primary tracking-widest my-4 bg-white py-3 px-6 rounded-lg inline-block shadow-sm">
                   {pairingCode}
                 </div>
                 <p className="text-xs text-text-secondary">
-                  配对码有效期较短，请尽快输入
+                  {t('whatsapp.login.pairingCodeHint')}
                 </p>
               </div>
             )}
@@ -950,14 +967,24 @@ const WhatsAppControl = ({ selectedWorker, onWorkerSelect, onRefresh }) => {
                 <span>{t('common.start')}</span>
              </button>
           ) : (
-             <button
-                onClick={handleStopWorker}
-                disabled={loading}
-                className="flex items-center space-x-2 px-4 py-2 bg-red-50 text-red-600 rounded-xl hover:bg-red-100 transition-colors font-medium text-sm"
-             >
-                <Shield className="w-4 h-4" />
-                <span>{t('common.stop')}</span>
-             </button>
+             <>
+               <button
+                  onClick={handleStopWorker}
+                  disabled={loading}
+                  className="flex items-center space-x-2 px-4 py-2 bg-red-50 text-red-600 rounded-xl hover:bg-red-100 transition-colors font-medium text-sm"
+               >
+                  <Shield className="w-4 h-4" />
+                  <span>{t('common.stop')}</span>
+               </button>
+               <button
+                  onClick={handleRestartUpdate}
+                  disabled={loading}
+                  className="flex items-center space-x-2 px-4 py-2 bg-primary/10 text-primary rounded-xl hover:bg-primary/20 transition-colors font-medium text-sm"
+               >
+                  <RefreshCw className="w-4 h-4" />
+                  <span>{t('whatsapp.detail.restartUpdate')}</span>
+               </button>
+             </>
           )}
         </div>
       </div>
@@ -1023,13 +1050,13 @@ const WhatsAppControl = ({ selectedWorker, onWorkerSelect, onRefresh }) => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
               <div className="space-y-6">
                 <div className="border-b border-border pb-4">
-                  <h3 className="text-lg font-bold text-text-main">登录配置</h3>
-                  <p className="text-sm text-text-secondary mt-1">配置WhatsApp账号登录方式</p>
+                  <h3 className="text-lg font-bold text-text-main">{t('whatsapp.login.configTitle')}</h3>
+                  <p className="text-sm text-text-secondary mt-1">{t('whatsapp.login.configDesc')}</p>
                 </div>
                 
                 <div className="space-y-6">
                   <div>
-                    <label className="block text-sm font-semibold text-text-main mb-3">登录方式</label>
+                    <label className="block text-sm font-semibold text-text-main mb-3">{t('whatsapp.login.method')}</label>
                     <div className="grid grid-cols-2 gap-4">
                       <label className={`flex items-center justify-center p-4 rounded-xl border-2 cursor-pointer transition-all duration-200 ${loginForm.signin_type === 40 ? 'border-primary bg-primary/5 text-primary' : 'border-border hover:border-primary/50 text-text-secondary'}`}>
                         <input
@@ -1057,17 +1084,17 @@ const WhatsAppControl = ({ selectedWorker, onWorkerSelect, onRefresh }) => {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-semibold text-text-main mb-2">手机号 / 账号标识</label>
+                    <label className="block text-sm font-semibold text-text-main mb-2">{t('whatsapp.login.identityLabel')}</label>
                     <input
                       type="text"
                       value={loginForm.login_phone}
                       onChange={(e) => setLoginForm({...loginForm, login_phone: e.target.value})}
-                      placeholder="请输入手机号作为账号ID"
+                      placeholder={t('whatsapp.login.identityPlaceholder')}
                       className="input-field w-full"
                     />
                     <p className="mt-2 text-xs text-text-secondary flex items-center">
                       <AlertCircle className="w-3 h-3 mr-1" />
-                      手机号将作为Worker的唯一标识
+                      {t('whatsapp.login.identityHint')}
                     </p>
                   </div>
 
@@ -1082,7 +1109,7 @@ const WhatsAppControl = ({ selectedWorker, onWorkerSelect, onRefresh }) => {
                         onChange={(e) => setLoginForm({...loginForm, is_cache_login: e.target.checked})}
                         className="hidden"
                       />
-                      使用缓存登录
+                      {t('whatsapp.login.useCache')}
                     </label>
                     <label className="flex items-center text-sm font-medium text-text-main cursor-pointer select-none group">
                       <div className={`w-5 h-5 rounded border mr-2 flex items-center justify-center transition-colors ${loginForm.enableProxy ? 'bg-primary border-primary' : 'border-text-secondary bg-white'}`}>
@@ -1094,7 +1121,7 @@ const WhatsAppControl = ({ selectedWorker, onWorkerSelect, onRefresh }) => {
                         onChange={(e) => setLoginForm({...loginForm, enableProxy: e.target.checked})}
                         className="hidden"
                       />
-                      启用代理
+                      {t('whatsapp.login.enableProxyShort')}
                     </label>
                   </div>
 
@@ -1102,17 +1129,17 @@ const WhatsAppControl = ({ selectedWorker, onWorkerSelect, onRefresh }) => {
                     <div className="bg-bg rounded-xl p-5 space-y-4 border border-border animate-fade-in">
                       <h4 className="text-sm font-bold text-text-main flex items-center">
                         <Globe className="w-4 h-4 mr-2 text-primary" />
-                        SOCKS5 代理设置
+                        {t('whatsapp.login.proxyTitle')}
                       </h4>
                       
                       {/* 快捷输入区域 */}
                       <div className="bg-gray-50 p-3 rounded border border-gray-200">
-                        <label className="block text-xs font-medium text-gray-700 mb-1">快捷输入 (Host,Port,User,Pass)</label>
+                        <label className="block text-xs font-medium text-gray-700 mb-1">{t('whatsapp.login.quickLabel')}</label>
                         <input
                             type="text"
                             value={loginForm.quickInput}
                             onChange={handleLoginQuickInputChange}
-                            placeholder="例如: 143.14.74.139,8886,user,pass"
+                            placeholder={t('whatsapp.login.quickPlaceholder')}
                             className="input-field w-full font-mono text-sm py-1.5"
                         />
                       </div>
@@ -1121,7 +1148,7 @@ const WhatsAppControl = ({ selectedWorker, onWorkerSelect, onRefresh }) => {
                         <div className="col-span-2">
                           <input
                             type="text"
-                            placeholder="IP地址"
+                            placeholder={t('whatsapp.login.ip')}
                             value={loginForm.socks5.ip}
                             onChange={(e) => setLoginForm({...loginForm, socks5: {...loginForm.socks5, ip: e.target.value}})}
                             className="input-field w-full"
@@ -1129,21 +1156,21 @@ const WhatsAppControl = ({ selectedWorker, onWorkerSelect, onRefresh }) => {
                         </div>
                         <input
                           type="text"
-                          placeholder="端口"
+                          placeholder={t('whatsapp.login.port')}
                           value={loginForm.socks5.port}
                           onChange={(e) => setLoginForm({...loginForm, socks5: {...loginForm.socks5, port: e.target.value}})}
                           className="input-field w-full"
                         />
                         <input
                           type="text"
-                          placeholder="用户名"
+                          placeholder={t('whatsapp.login.user')}
                           value={loginForm.socks5.user}
                           onChange={(e) => setLoginForm({...loginForm, socks5: {...loginForm.socks5, user: e.target.value}})}
                           className="input-field w-full"
                         />
                         <input
                           type="password"
-                          placeholder="密码"
+                          placeholder={t('whatsapp.login.pwd')}
                           value={loginForm.socks5.pwd}
                           onChange={(e) => setLoginForm({...loginForm, socks5: {...loginForm.socks5, pwd: e.target.value}})}
                           className="input-field w-full col-span-2"
@@ -1159,7 +1186,7 @@ const WhatsAppControl = ({ selectedWorker, onWorkerSelect, onRefresh }) => {
                       className="btn-primary w-full py-3 flex items-center justify-center space-x-2 shadow-lg shadow-primary/25 hover:shadow-primary/40 text-lg"
                     >
                       {loading ? <LoadingSpinner size="small" /> : <LogIn className="w-4 h-4" />}
-                      <span>{isNewSession ? '创建并连接' : '开始登录'}</span>
+                      <span>{isNewSession ? t('whatsapp.login.createAndConnect') : t('whatsapp.login.start')}</span>
                     </button>
                     {!isNewSession && (
                       <>
@@ -1169,13 +1196,13 @@ const WhatsAppControl = ({ selectedWorker, onWorkerSelect, onRefresh }) => {
                           className="btn-secondary flex items-center justify-center space-x-2"
                         >
                           <LogOut className="w-4 h-4" />
-                          <span>退出</span>
+                          <span>{t('whatsapp.login.exit')}</span>
                         </button>
                         <button
                           onClick={handleCloseWorker}
                           disabled={loading}
                           className="btn-secondary bg-red-50 text-red-600 hover:bg-red-100"
-                          title="完全关闭Worker进程"
+                          title={t('whatsapp.login.closeWorkerTitle')}
                         >
                           <Shield className="w-4 h-4" />
                         </button>
@@ -1191,40 +1218,40 @@ const WhatsAppControl = ({ selectedWorker, onWorkerSelect, onRefresh }) => {
                     <div className="bg-white p-4 rounded-lg shadow-sm mb-4">
                       <img src={qrCode} alt="QR Code" className="w-48 h-48 mx-auto" />
                     </div>
-                    <p className="text-gray-600 font-medium">请使用WhatsApp扫描二维码</p>
+                    <p className="text-gray-600 font-medium">{t('whatsapp.login.qrHint')}</p>
                   </div>
                 ) : pairingCode ? (
                   <div className="text-center">
                     <div className="bg-blue-100 p-6 rounded-lg mb-4">
                       <p className="text-4xl font-mono font-bold text-blue-700 tracking-wider">{pairingCode}</p>
                     </div>
-                    <p className="text-gray-600 font-medium">请在手机WhatsApp输入配对码</p>
+                    <p className="text-gray-600 font-medium">{t('whatsapp.login.pairingHintPhone')}</p>
                   </div>
                 ) : (loginStatus?.status === 'logged_in' || loginStatus?.data?.status === 'logged_in') ? (
                   <div className="text-center">
-                    <div className="bg-green-100 p-6 rounded-full mb-4 w-24 h-24 mx-auto flex items-center justify-center">
-                      <CheckCircle className="w-12 h-12 text-green-600" />
-                    </div>
-                    <h3 className="text-xl font-bold text-green-700 mb-2">已登录</h3>
-                    <p className="text-gray-600">WhatsApp 服务运行正常</p>
-                    <div className="mt-6 flex justify-center space-x-4">
-                      <button onClick={() => setActiveTab('messages')} className="btn-primary text-sm">
-                        查看消息
-                      </button>
-                      <button onClick={() => setActiveTab('contacts')} className="btn-secondary text-sm">
-                        查看联系人
-                      </button>
-                    </div>
-                  </div>
-                ) : (
-                  <div className="text-center text-gray-400">
-                    <Phone className="w-16 h-16 mx-auto mb-4 opacity-50" />
-                    <p>等待启动登录...</p>
-                  </div>
-                )}
+                <div className="bg-green-100 p-6 rounded-full mb-4 w-24 h-24 mx-auto flex items-center justify-center">
+                  <CheckCircle className="w-12 h-12 text-green-600" />
+                </div>
+                <h3 className="text-xl font-bold text-green-700 mb-2">{t('whatsapp.status.loggedIn')}</h3>
+                <p className="text-gray-600">{t('whatsapp.status.sub.whatsappOnline')}</p>
+                <div className="mt-6 flex justify-center space-x-4">
+                  <button onClick={() => setActiveTab('messages')} className="btn-primary text-sm">
+                    {t('whatsapp.login.viewMessages')}
+                  </button>
+                  <button onClick={() => setActiveTab('contacts')} className="btn-secondary text-sm">
+                    {t('whatsapp.login.viewContacts')}
+                  </button>
+                </div>
               </div>
-            </div>
+            ) : (
+              <div className="text-center text-gray-400">
+                <Phone className="w-16 h-16 mx-auto mb-4 opacity-50" />
+                <p>{t('whatsapp.login.waitToStart')}</p>
+              </div>
             )}
+          </div>
+          </div>
+        )}
           </div>
         )}
 
@@ -1232,13 +1259,13 @@ const WhatsAppControl = ({ selectedWorker, onWorkerSelect, onRefresh }) => {
         {activeTab === 'proxy' && (
           <div className="space-y-6">
             <div className="flex justify-between items-center">
-              <h3 className="text-lg font-semibold text-gray-900">代理配置</h3>
+              <h3 className="text-lg font-semibold text-gray-900">{t('whatsapp.proxy.title')}</h3>
               <div className="flex space-x-2">
                 <button onClick={handleDetectProxy} className="btn-secondary text-sm">
-                  检测代理
+                  {t('whatsapp.proxy.detect')}
                 </button>
                 <button onClick={checkProxyStatus} className="btn-secondary text-sm">
-                  刷新状态
+                  {t('whatsapp.proxy.refresh')}
                 </button>
               </div>
             </div>
@@ -1249,26 +1276,26 @@ const WhatsAppControl = ({ selectedWorker, onWorkerSelect, onRefresh }) => {
                   <Globe className="w-5 h-5 text-blue-600 mt-1" />
                   <div className="flex-1">
                     <h4 className="font-medium text-blue-900 flex items-center">
-                        当前代理配置
+                        {t('whatsapp.proxy.currentConfig')}
                         {proxyStatus.enabled ? 
-                            <span className="ml-2 px-2 py-0.5 bg-green-100 text-green-700 text-xs rounded-full">已启用</span> : 
-                            <span className="ml-2 px-2 py-0.5 bg-gray-100 text-gray-600 text-xs rounded-full">未启用</span>
+                            <span className="ml-2 px-2 py-0.5 bg-green-100 text-green-700 text-xs rounded-full">{t('whatsapp.proxy.enabled')}</span> : 
+                            <span className="ml-2 px-2 py-0.5 bg-gray-100 text-gray-600 text-xs rounded-full">{t('whatsapp.proxy.disabled')}</span>
                         }
                     </h4>
                     {proxyStatus.config ? (
                         <div className="mt-2 grid grid-cols-2 gap-x-4 gap-y-2 text-sm text-blue-800">
-                            <div><span className="font-semibold">IP:</span> {proxyStatus.config.ip}</div>
-                            <div><span className="font-semibold">Port:</span> {proxyStatus.config.port}</div>
-                            <div><span className="font-semibold">User:</span> {proxyStatus.config.user || '-'}</div>
-                            <div><span className="font-semibold">Pwd:</span> {proxyStatus.config.pwd || '-'}</div>
+                            <div><span className="font-semibold">{t('whatsapp.proxy.ipLabel')}</span> {proxyStatus.config.ip}</div>
+                            <div><span className="font-semibold">{t('whatsapp.proxy.portLabel')}</span> {proxyStatus.config.port}</div>
+                            <div><span className="font-semibold">{t('whatsapp.proxy.userLabel')}</span> {proxyStatus.config.user || '-'}</div>
+                            <div><span className="font-semibold">{t('whatsapp.proxy.pwdLabel')}</span> {proxyStatus.config.pwd || '-'}</div>
                             {proxyStatus.local_forwarder && (
                                 <div className="col-span-2 text-xs text-blue-600 mt-1">
-                                    <span className="font-semibold">本地转发:</span> {proxyStatus.local_forwarder}
+                                    <span className="font-semibold">{t('whatsapp.proxy.localForward')}:</span> {proxyStatus.local_forwarder}
                                 </div>
                             )}
                         </div>
                     ) : (
-                        <p className="text-sm text-blue-700 mt-1">未检测到配置信息</p>
+                        <p className="text-sm text-blue-700 mt-1">{t('whatsapp.proxy.noConfig')}</p>
                     )}
                   </div>
                 </div>
@@ -1278,20 +1305,20 @@ const WhatsAppControl = ({ selectedWorker, onWorkerSelect, onRefresh }) => {
             <form onSubmit={handleSwitchProxy} className="max-w-2xl space-y-4">
               {/* 快捷输入区域 */}
               <div className="bg-gray-50 p-4 rounded-lg border border-gray-200 mb-4">
-                <label className="block text-sm font-medium text-gray-700 mb-2">快捷输入 (Host,Port,User,Pass)</label>
+                <label className="block text-sm font-medium text-gray-700 mb-2">{t('whatsapp.proxy.quickLabel')}</label>
                 <input
                   type="text"
                   value={proxyForm.quickInput}
                   onChange={handleQuickInputChange}
-                  placeholder="例如: 143.14.74.139,8886,user,pass"
+                  placeholder={t('whatsapp.proxy.quickPlaceholder')}
                   className="input-field w-full font-mono text-sm"
                 />
-                <p className="text-xs text-gray-500 mt-1">输入后会自动填充下方表单</p>
+                <p className="text-xs text-gray-500 mt-1">{t('whatsapp.proxy.quickHint')}</p>
               </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <div className="col-span-2">
-                  <label className="block text-sm font-medium text-gray-700 mb-2">协议 (Protocol)</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">{t('whatsapp.proxy.protocol')}</label>
                   <select
                     value={proxyForm.protocol}
                     onChange={(e) => setProxyForm({...proxyForm, protocol: e.target.value})}
@@ -1303,7 +1330,7 @@ const WhatsAppControl = ({ selectedWorker, onWorkerSelect, onRefresh }) => {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">主机地址 (Host)</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">{t('whatsapp.proxy.host')}</label>
                   <input
                     type="text"
                     value={proxyForm.host}
@@ -1313,7 +1340,7 @@ const WhatsAppControl = ({ selectedWorker, onWorkerSelect, onRefresh }) => {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">端口 (Port)</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">{t('whatsapp.proxy.port')}</label>
                   <input
                     type="text"
                     value={proxyForm.port}
@@ -1323,7 +1350,7 @@ const WhatsAppControl = ({ selectedWorker, onWorkerSelect, onRefresh }) => {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">用户名</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">{t('whatsapp.proxy.username')}</label>
                   <input
                     type="text"
                     value={proxyForm.username}
@@ -1332,7 +1359,7 @@ const WhatsAppControl = ({ selectedWorker, onWorkerSelect, onRefresh }) => {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">密码</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">{t('whatsapp.proxy.password')}</label>
                   <input
                     type="password"
                     value={proxyForm.password}
@@ -1342,7 +1369,7 @@ const WhatsAppControl = ({ selectedWorker, onWorkerSelect, onRefresh }) => {
                 </div>
               </div>
               <button type="submit" disabled={loading} className="btn-primary">
-                切换代理
+                {t('whatsapp.proxy.switch')}
               </button>
             </form>
           </div>
@@ -1356,31 +1383,31 @@ const WhatsAppControl = ({ selectedWorker, onWorkerSelect, onRefresh }) => {
                <div className="bg-bg p-6 rounded-xl border border-border">
                  <h3 className="text-lg font-bold text-text-main mb-4 flex items-center">
                    <Users className="w-5 h-5 mr-2 text-primary" />
-                   创建新群组
+                   {t('whatsapp.groups.createTitle')}
                  </h3>
                  <form onSubmit={handleCreateGroup} className="space-y-4">
                    <div>
-                     <label className="block text-sm font-medium text-text-secondary mb-1">群名称</label>
+                     <label className="block text-sm font-medium text-text-secondary mb-1">{t('whatsapp.groups.nameLabel')}</label>
                      <input
                        type="text"
                        value={groupForm.name}
                        onChange={(e) => setGroupForm({...groupForm, name: e.target.value})}
-                       placeholder="请输入群名称"
+                       placeholder={t('whatsapp.groups.namePlaceholder')}
                        className="input-field w-full"
                      />
                    </div>
                    <div>
-                     <label className="block text-sm font-medium text-text-secondary mb-1">初始成员 (手机号)</label>
+                     <label className="block text-sm font-medium text-text-secondary mb-1">{t('whatsapp.groups.membersLabel')}</label>
                      <textarea
                        value={groupForm.participants}
                        onChange={(e) => setGroupForm({...groupForm, participants: e.target.value})}
-                       placeholder="输入成员手机号，用逗号分隔 (例如: 8613800000001, 8613800000002)"
+                       placeholder={t('whatsapp.groups.membersPlaceholder')}
                        rows={3}
                        className="input-field w-full"
                      />
                    </div>
                    <button type="submit" disabled={loading} className="btn-primary w-full">
-                     创建群组
+                     {t('whatsapp.groups.createBtn')}
                    </button>
                  </form>
                </div>
@@ -1389,42 +1416,42 @@ const WhatsAppControl = ({ selectedWorker, onWorkerSelect, onRefresh }) => {
                <div className="bg-bg p-6 rounded-xl border border-border">
                  <h3 className="text-lg font-bold text-text-main mb-4 flex items-center">
                    <Users className="w-5 h-5 mr-2 text-primary" />
-                   添加群成员
+                   {t('whatsapp.groups.addTitle')}
                  </h3>
                  <form onSubmit={handleAddParticipants} className="space-y-4">
                    <div>
-                     <label className="block text-sm font-medium text-text-secondary mb-1">群组 ID (GroupID)</label>
+                     <label className="block text-sm font-medium text-text-secondary mb-1">{t('whatsapp.groups.groupIdLabel')}</label>
                      <input
                        type="text"
                        value={groupForm.targetGroupId}
                        onChange={(e) => setGroupForm({...groupForm, targetGroupId: e.target.value})}
-                       placeholder="输入群组ID (例如: 123456789@g.us)"
+                       placeholder={t('whatsapp.groups.groupIdPlaceholder')}
                        className="input-field w-full"
                      />
                    </div>
                    <div>
-                     <label className="block text-sm font-medium text-text-secondary mb-1">新成员 (手机号)</label>
+                     <label className="block text-sm font-medium text-text-secondary mb-1">{t('whatsapp.groups.newMembersLabel')}</label>
                      <textarea
                        value={groupForm.participants}
                        onChange={(e) => setGroupForm({...groupForm, participants: e.target.value})}
-                       placeholder="输入成员手机号，用逗号分隔"
+                       placeholder={t('whatsapp.groups.newMembersPlaceholder')}
                        rows={3}
                        className="input-field w-full"
                      />
                    </div>
                    <button type="submit" disabled={loading} className="btn-primary w-full">
-                     添加成员
+                     {t('whatsapp.groups.addBtn')}
                    </button>
                  </form>
                </div>
              </div>
              
              <div className="bg-blue-50 p-4 rounded-lg border border-blue-100 text-sm text-blue-800">
-               <p className="font-bold mb-1">提示：</p>
+               <p className="font-bold mb-1">{t('whatsapp.groups.tipsTitle')}</p>
                <ul className="list-disc list-inside space-y-1">
-                 <li>创建群组时，请确保添加的成员手机号已在您的通讯录中或已注册WhatsApp。</li>
-                 <li>群组ID通常以 "@g.us" 结尾，您可以在消息列表或联系人列表中找到它。</li>
-                 <li>发送群消息请使用"消息管理"功能，直接输入群组ID作为目标号码。</li>
+                 <li>{t('whatsapp.groups.tip1')}</li>
+                 <li>{t('whatsapp.groups.tip2')}</li>
+                 <li>{t('whatsapp.groups.tip3')}</li>
                </ul>
              </div>
           </div>
@@ -1435,20 +1462,20 @@ const WhatsAppControl = ({ selectedWorker, onWorkerSelect, onRefresh }) => {
           <div className="space-y-6">
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
               <div className="lg:col-span-1 border-r pr-6">
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">发送消息</h3>
+                <h3 className="text-lg font-semibold text-gray-900 mb-4">{t('whatsapp.messages.sendTitle')}</h3>
                 <form onSubmit={handleSendMessage} className="space-y-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">联系人/号码</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">{t('whatsapp.messages.contactLabel')}</label>
                     <input
                       type="text"
                       value={messageForm.contact}
                       onChange={(e) => setMessageForm({...messageForm, contact: e.target.value})}
-                      placeholder="输入号码或姓名"
+                      placeholder={t('whatsapp.messages.contactPlaceholder')}
                       className="input-field"
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">内容</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">{t('whatsapp.messages.contentLabel')}</label>
                     <textarea
                       value={messageForm.message}
                       onChange={(e) => setMessageForm({...messageForm, message: e.target.value})}
@@ -1457,16 +1484,16 @@ const WhatsAppControl = ({ selectedWorker, onWorkerSelect, onRefresh }) => {
                     />
                   </div>
                   <button type="submit" disabled={loading} className="btn-primary w-full">
-                    <Send className="w-4 h-4 mr-2 inline" /> 发送
+                    <Send className="w-4 h-4 mr-2 inline" /> {t('whatsapp.messages.sendBtn')}
                   </button>
                 </form>
               </div>
               
               <div className="lg:col-span-2">
                 <div className="flex justify-between items-center mb-4">
-                  <h3 className="text-lg font-semibold text-gray-900">消息接收记录</h3>
+                  <h3 className="text-lg font-semibold text-gray-900">{t('whatsapp.messages.receivedTitle')}</h3>
                   <button onClick={() => loadMessages()} className="text-blue-600 hover:text-blue-800 text-sm">
-                    刷新列表
+                    {t('whatsapp.messages.refreshList')}
                   </button>
                 </div>
                 <div className="space-y-2 h-[400px] overflow-y-auto pr-2">
@@ -1475,17 +1502,17 @@ const WhatsAppControl = ({ selectedWorker, onWorkerSelect, onRefresh }) => {
                       <div key={idx} className="p-3 bg-gray-50 rounded-lg">
                         <div className="flex justify-between mb-1">
                           <span className="font-medium text-gray-900">
-                            {msg.notifyName || msg.author || msg.from || msg.contact || '未知发送者'}
+                            {msg.notifyName || msg.author || msg.from || msg.contact || t('whatsapp.messages.unknownSender')}
                           </span>
                           <span className="text-xs text-gray-500">
-                            {msg.timestamp ? new Date(msg.timestamp).toLocaleString() : '未知时间'}
+                            {msg.timestamp ? new Date(msg.timestamp).toLocaleString() : t('whatsapp.messages.unknownTime')}
                           </span>
                         </div>
-                        <p className="text-gray-700">{msg.body || msg.message || msg.content || '无内容'}</p>
+                        <p className="text-gray-700">{msg.body || msg.message || msg.content || t('whatsapp.messages.noContent')}</p>
                       </div>
                     ))
                   ) : (
-                    <div className="text-center text-gray-500 py-12">暂无消息记录</div>
+                    <div className="text-center text-gray-500 py-12">{t('whatsapp.messages.empty')}</div>
                   )}
                 </div>
               </div>
@@ -1498,8 +1525,8 @@ const WhatsAppControl = ({ selectedWorker, onWorkerSelect, onRefresh }) => {
           <div className="space-y-6 animate-fade-in">
             <div className="flex justify-between items-center">
               <div>
-                <h3 className="text-lg font-bold text-text-main">联系人列表</h3>
-                <p className="text-sm text-text-secondary mt-1">管理和查看WhatsApp联系人</p>
+                <h3 className="text-lg font-bold text-text-main">{t('whatsapp.contacts.title')}</h3>
+                <p className="text-sm text-text-secondary mt-1">{t('whatsapp.contacts.subtitle')}</p>
               </div>
               <div className="flex space-x-2">
                 {/* 添加联系人触发器 - 这里为了简单，直接显示内联表单或使用Popover，这里先放一个添加区域在列表上方 */}
@@ -1510,7 +1537,7 @@ const WhatsAppControl = ({ selectedWorker, onWorkerSelect, onRefresh }) => {
                 disabled={loading}
               >
                 <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
-                <span>刷新列表</span>
+                <span>{t('whatsapp.contacts.refresh')}</span>
               </button>
             </div>
             
@@ -1518,45 +1545,45 @@ const WhatsAppControl = ({ selectedWorker, onWorkerSelect, onRefresh }) => {
             <div className="bg-bg p-4 rounded-xl border border-border">
                 <h4 className="font-bold text-text-main mb-3 flex items-center">
                     <Plus className="w-4 h-4 mr-2 text-primary" />
-                    添加新联系人
+                    {t('whatsapp.contacts.addTitle')}
                 </h4>
                 <form onSubmit={handleAddContact} className="flex gap-4 items-end flex-wrap">
                     <div className="flex-1 min-w-[200px]">
-                        <label className="block text-xs text-text-secondary mb-1">手机号 (带国家代码)</label>
+                        <label className="block text-xs text-text-secondary mb-1">{t('whatsapp.contacts.phoneLabel')}</label>
                         <input 
                             type="text" 
-                            placeholder="例如: 8613800000000"
+                            placeholder={t('whatsapp.contacts.phonePlaceholder')}
                             value={addContactForm.phone}
                             onChange={e => setAddContactForm({...addContactForm, phone: e.target.value})}
                             className="input-field w-full py-2"
                         />
                     </div>
                     <div className="w-[120px]">
-                        <label className="block text-xs text-text-secondary mb-1">名字 (可选)</label>
+                        <label className="block text-xs text-text-secondary mb-1">{t('whatsapp.contacts.firstNameLabel')}</label>
                         <input 
                             type="text" 
-                            placeholder="名字"
+                            placeholder={t('whatsapp.contacts.firstNamePlaceholder')}
                             value={addContactForm.firstName}
                             onChange={e => setAddContactForm({...addContactForm, firstName: e.target.value})}
                             className="input-field w-full py-2"
                         />
                     </div>
                     <div className="w-[120px]">
-                        <label className="block text-xs text-text-secondary mb-1">姓氏 (可选)</label>
+                        <label className="block text-xs text-text-secondary mb-1">{t('whatsapp.contacts.lastNameLabel')}</label>
                         <input 
                             type="text" 
-                            placeholder="姓氏"
+                            placeholder={t('whatsapp.contacts.lastNamePlaceholder')}
                             value={addContactForm.lastName}
                             onChange={e => setAddContactForm({...addContactForm, lastName: e.target.value})}
                             className="input-field w-full py-2"
                         />
                     </div>
                     <button type="submit" disabled={loading} className="btn-primary py-2 px-4 h-[42px]">
-                        添加
+                        {t('whatsapp.contacts.addBtn')}
                     </button>
                 </form>
                 <p className="text-xs text-text-secondary mt-2">
-                    提示：输入完整手机号（不带+号）可直接添加到列表并开始对话。
+                    {t('whatsapp.contacts.tip')}
                 </p>
             </div>
             
@@ -1583,10 +1610,10 @@ const WhatsAppControl = ({ selectedWorker, onWorkerSelect, onRefresh }) => {
                       </div>
                       <div className="overflow-hidden flex-1 min-w-0">
                         <p className="font-bold text-text-main truncate" title={contact.name || contact.id}>
-                          {contact.name || contact.pushname || contact.id || '未知用户'}
+                          {contact.name || contact.pushname || contact.id || t('whatsapp.contacts.unknownUser')}
                         </p>
                         <p className="text-xs text-text-secondary truncate mt-0.5" title={contact.id || contact.number}>
-                          {contact.id?.split('@')[0] || contact.number || '未知号码'}
+                          {contact.id?.split('@')[0] || contact.number || t('whatsapp.contacts.unknownNumber')}
                         </p>
                       </div>
                     </div>
@@ -1611,7 +1638,7 @@ const WhatsAppControl = ({ selectedWorker, onWorkerSelect, onRefresh }) => {
                         toast.success(`已选择联系人: ${contact.name || targetContact}`);
                       }}
                       className="p-2.5 rounded-full text-text-secondary hover:text-primary hover:bg-primary/10 transition-all duration-200 opacity-0 group-hover:opacity-100 transform translate-x-2 group-hover:translate-x-0"
-                      title="发送消息"
+                      title={t('whatsapp.contacts.sendTitle')}
                     >
                       <Send className="w-5 h-5" />
                     </button>
@@ -1621,7 +1648,7 @@ const WhatsAppControl = ({ selectedWorker, onWorkerSelect, onRefresh }) => {
                 <div className="col-span-full flex flex-col items-center justify-center py-20 bg-bg/50 rounded-2xl border-2 border-dashed border-border">
                   <Users className="w-12 h-12 text-text-secondary mb-4 opacity-50" />
                   <p className="text-text-secondary font-medium">
-                    {loading ? '正在加载联系人...' : '暂无联系人数据'}
+                    {loading ? t('whatsapp.contacts.loading') : t('whatsapp.contacts.empty')}
                   </p>
                 </div>
               )}

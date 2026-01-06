@@ -50,39 +50,24 @@ const WorkerManager = ({ workers, onRefresh, onWorkerSelect }) => {
   }, [workers]);
 
   const handleDeleteWorker = async (workerId) => {
-    if (!confirm('Are you sure to delete this Worker?')) return;
+    if (!confirm(t('workers.confirm.delete'))) return;
     
     try {
       const response = await masterService.deleteAccount(workerId);
       
       if (response.data.success) {
-        toast.success('Worker deleted');
+        toast.success(t('workers.toast.deleted'));
         onRefresh();
       } else {
-        toast.error(response.data.message || 'Failed to delete Worker');
+        toast.error(response.data.message || t('workers.toast.deleteFailed'));
       }
     } catch (error) {
       console.error('Failed to delete Worker:', error);
-      toast.error('Failed to delete Worker');
+      toast.error(t('workers.toast.deleteFailed'));
     }
   };
 
-  const handleRestartWorker = async (workerId) => {
-    try {
-      const response = await workerService.restart(workerId);
-      if (response.data.success) {
-        toast.success('已触发重启更新');
-        // 刷新列表和状态
-        onRefresh && onRefresh();
-        fetchRealtimeStatuses();
-      } else {
-        toast.error(response.data.message || '重启更新失败');
-      }
-    } catch (error) {
-      console.error('重启更新失败:', error);
-      toast.error('重启更新请求失败');
-    }
-  };
+  
 
   const getStatusConfig = (status) => {
     switch (status) {
@@ -115,12 +100,12 @@ const WorkerManager = ({ workers, onRefresh, onWorkerSelect }) => {
              <button 
                 onClick={() => { onRefresh(); fetchRealtimeStatuses(); }} 
                 className={`p-2 rounded-full hover:bg-bg text-text-secondary transition-all ${refreshing ? 'animate-spin text-primary' : ''}`}
-                title="刷新状态"
+                title={t('workers.refreshStatus')}
              >
                 <RefreshCw className="w-5 h-5" />
              </button>
           </h1>
-          <p className="text-text-secondary mt-1">Manage all WhatsApp Worker instances</p>
+          <p className="text-text-secondary mt-1">{t('workers.subtitle')}</p>
         </div>
         <button
           onClick={() => {
@@ -130,7 +115,7 @@ const WorkerManager = ({ workers, onRefresh, onWorkerSelect }) => {
           className="btn-primary flex items-center space-x-2 shadow-lg shadow-primary/30 hover:shadow-primary/50"
         >
           <Plus className="w-4 h-4" />
-          <span>Connect New Account</span>
+          <span>{t('whatsapp.header.connectNew')}</span>
         </button>
       </div>
 
@@ -166,13 +151,13 @@ const WorkerManager = ({ workers, onRefresh, onWorkerSelect }) => {
 
             <div className="space-y-3 mb-6 relative z-10 bg-bg/50 p-4 rounded-xl">
               <div className="flex justify-between text-sm">
-                <span className="text-text-secondary">Status</span>
+                <span className="text-text-secondary">{t('workers.card.statusLabel')}</span>
                 <span className="font-medium text-text-main font-mono">
                     {workerStatuses[worker.id] || worker.status}
                 </span>
               </div>
               <div className="flex justify-between text-sm">
-                <span className="text-text-secondary">Created</span>
+                <span className="text-text-secondary">{t('workers.card.createdLabel')}</span>
                 <span className="font-medium text-text-main">
                   {worker.created_at ? new Date(worker.created_at).toLocaleDateString() : ''}
                 </span>
@@ -192,19 +177,22 @@ const WorkerManager = ({ workers, onRefresh, onWorkerSelect }) => {
                 }}
                 className="btn-primary flex-1 py-2.5 text-sm shadow-md shadow-primary/20"
               >
-                Use
+                {t('workers.card.use')}
               </button>
               <button
-                onClick={() => handleRestartWorker(worker.id)}
+                onClick={() => {
+                  onRefresh && onRefresh();
+                  fetchRealtimeStatuses();
+                }}
                 className="p-2.5 rounded-lg text-primary hover:bg-primary/10 hover:text-primary transition-colors border border-transparent hover:border-primary/20"
-                title="重启更新Worker"
+                title={t('workers.refreshStatus')}
               >
                 <RefreshCw className="w-5 h-5" />
               </button>
               <button
                 onClick={() => handleDeleteWorker(worker.id)}
                 className="p-2.5 rounded-lg text-red-500 hover:bg-red-50 hover:text-red-600 transition-colors border border-transparent hover:border-red-100"
-                title="删除Worker"
+                title={t('workers.tooltip.delete')}
               >
                 <Trash2 className="w-5 h-5" />
               </button>
@@ -218,7 +206,7 @@ const WorkerManager = ({ workers, onRefresh, onWorkerSelect }) => {
               <Server className="w-10 h-10 text-text-secondary" />
             </div>
             <h3 className="text-xl font-bold text-text-main mb-2">{t('dashboard.noWorkers')}</h3>
-            <p className="text-text-secondary mb-8">Connect your first WhatsApp account to get started</p>
+            <p className="text-text-secondary mb-8">{t('workers.empty.desc')}</p>
             <button
               onClick={() => {
                 onWorkerSelect(null);
@@ -226,7 +214,7 @@ const WorkerManager = ({ workers, onRefresh, onWorkerSelect }) => {
               }}
               className="btn-primary px-8 py-3 shadow-lg shadow-primary/30"
             >
-              Connect New Account
+              {t('whatsapp.header.connectNew')}
             </button>
           </div>
         )}

@@ -2,8 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { MessageSquare, Send, RefreshCw, Search, Filter } from 'lucide-react';
 import { workerService } from '../services/api';
 import LoadingSpinner from '../components/LoadingSpinner';
+import { useI18n } from '../i18n/index.js';
 
 const Messages = ({ selectedWorker }) => {
+  const { t } = useI18n();
   const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
@@ -68,8 +70,8 @@ const Messages = ({ selectedWorker }) => {
       <div className="flex items-center justify-center h-64">
         <div className="text-center">
           <MessageSquare className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-          <h3 className="text-lg font-medium text-gray-900 mb-2">请选择Worker</h3>
-          <p className="text-gray-500">请在侧边栏选择一个Worker来查看消息</p>
+          <h3 className="text-lg font-medium text-gray-900 mb-2">{t('messages.selectWorkerTitle')}</h3>
+          <p className="text-gray-500">{t('messages.selectWorkerDesc')}</p>
         </div>
       </div>
     );
@@ -80,9 +82,9 @@ const Messages = ({ selectedWorker }) => {
       {/* 页面标题 */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">消息管理</h1>
+          <h1 className="text-2xl font-bold text-gray-900">{t('messages.pageTitle')}</h1>
           <p className="text-gray-600">
-            当前Worker: {selectedWorker.name || `Worker ${selectedWorker.id}`}
+            {t('messages.currentWorker')}: {selectedWorker.name || `Worker ${selectedWorker.id}`}
           </p>
         </div>
         <button
@@ -91,7 +93,7 @@ const Messages = ({ selectedWorker }) => {
           className="btn-primary flex items-center space-x-2"
         >
           {loading ? <LoadingSpinner size="small" /> : <RefreshCw className="w-4 h-4" />}
-          <span>刷新消息</span>
+          <span>{t('messages.refreshMessages')}</span>
         </button>
       </div>
 
@@ -105,7 +107,7 @@ const Messages = ({ selectedWorker }) => {
               type="text"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              placeholder="搜索消息内容或联系人..."
+              placeholder={t('messages.searchPlaceholder')}
               className="input-field pl-10"
             />
           </div>
@@ -118,9 +120,9 @@ const Messages = ({ selectedWorker }) => {
               onChange={(e) => setFilterType(e.target.value)}
               className="input-field min-w-32"
             >
-              <option value="all">全部消息</option>
-              <option value="received">接收的消息</option>
-              <option value="sent">发送的消息</option>
+              <option value="all">{t('messages.filterAll')}</option>
+              <option value="received">{t('messages.filterReceived')}</option>
+              <option value="sent">{t('messages.filterSent')}</option>
             </select>
           </div>
         </div>
@@ -130,26 +132,26 @@ const Messages = ({ selectedWorker }) => {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div className="card text-center">
           <div className="text-2xl font-bold text-gray-900">{messages.length}</div>
-          <div className="text-sm text-gray-600">总消息数</div>
+          <div className="text-sm text-gray-600">{t('messages.statsTotal')}</div>
         </div>
         <div className="card text-center">
           <div className="text-2xl font-bold text-green-600">
             {messages.filter(m => !m.fromMe).length}
           </div>
-          <div className="text-sm text-gray-600">接收消息</div>
+          <div className="text-sm text-gray-600">{t('messages.statsReceived')}</div>
         </div>
         <div className="card text-center">
           <div className="text-2xl font-bold text-blue-600">
             {messages.filter(m => m.fromMe).length}
           </div>
-          <div className="text-sm text-gray-600">发送消息</div>
+          <div className="text-sm text-gray-600">{t('messages.statsSent')}</div>
         </div>
       </div>
 
       {/* 消息列表 */}
       <div className="card">
         <h3 className="text-lg font-semibold text-gray-900 mb-4">
-          消息列表 ({filteredMessages.length})
+          {t('messages.listTitle')} ({filteredMessages.length})
         </h3>
         
         {loading ? (
@@ -160,7 +162,7 @@ const Messages = ({ selectedWorker }) => {
           <div className="text-center py-8">
             <MessageSquare className="w-12 h-12 text-gray-300 mx-auto mb-4" />
             <p className="text-gray-500">
-              {searchTerm || filterType !== 'all' ? '没有找到匹配的消息' : '暂无消息'}
+              {searchTerm || filterType !== 'all' ? t('messages.noMatches') : t('messages.noMessages')}
             </p>
           </div>
         ) : (
@@ -180,7 +182,7 @@ const Messages = ({ selectedWorker }) => {
                       message.fromMe ? 'bg-blue-500' : 'bg-green-500'
                     }`}></div>
                     <span className="font-medium text-gray-900">
-                      {message.fromMe ? '我' : (message.from || '未知联系人')}
+                      {message.fromMe ? t('messages.senderMe') : (message.from || t('messages.senderUnknown'))}
                     </span>
                     {message.fromMe && (
                       <Send className="w-3 h-3 text-blue-500" />
@@ -192,7 +194,7 @@ const Messages = ({ selectedWorker }) => {
                 </div>
                 
                 <div className="text-gray-800">
-                  {message.body || '(无内容)'}
+                  {message.body || t('messages.contentEmpty')}
                 </div>
                 
                 {message.type && message.type !== 'chat' && (
