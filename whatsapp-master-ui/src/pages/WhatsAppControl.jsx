@@ -45,6 +45,46 @@ const WhatsAppControl = ({ selectedWorker, onWorkerSelect, onRefresh }) => {
     quickInput: '' // 新增快捷输入字段
   });
 
+  // 当选择的Worker变化时，自动填充当前账号到登录表单，并拉取代理状态
+  useEffect(() => {
+    if (selectedWorker) {
+      setLoginForm(prev => ({
+        ...prev,
+        login_phone: selectedWorker.phone || prev.login_phone,
+      }));
+      checkProxyStatus();
+    }
+  }, [selectedWorker]);
+
+  // 当代理状态更新时，用已保存的代理配置预填充登录与代理表单（不覆盖已有用户输入）
+  useEffect(() => {
+    const cfg = proxyStatus?.config;
+    if (cfg) {
+      setLoginForm(prev => ({
+        ...prev,
+        socks5: {
+          ...prev.socks5,
+          ip: prev.socks5.ip || cfg.ip || '',
+          port: prev.socks5.port || String(cfg.port ?? ''),
+          user: prev.socks5.user || cfg.user || '',
+          // 密码后端返回为掩码（***），不自动填充
+          pwd: prev.socks5.pwd || '',
+          region: prev.socks5.region,
+          resource_code: prev.socks5.resource_code,
+          resource_name: prev.socks5.resource_name
+        }
+      }));
+      setProxyForm(prev => ({
+        ...prev,
+        host: prev.host || cfg.ip || '',
+        port: prev.port || String(cfg.port ?? ''),
+        username: prev.username || cfg.user || '',
+        // 不填充掩码密码
+        password: prev.password || ''
+      }));
+    }
+  }, [proxyStatus]);
+
   // 处理快捷输入变化
   const handleQuickInputChange = (e) => {
     const value = e.target.value;
@@ -448,8 +488,8 @@ const WhatsAppControl = ({ selectedWorker, onWorkerSelect, onRefresh }) => {
   };
 
   const handleLogin = async () => {
-    // 验证手机号
-    if (!loginForm.login_phone) {
+    const phoneToUse = selectedWorker?.phone || loginForm.login_phone;
+    if (loginForm.signin_type === 40 && !phoneToUse) {
       toast.error(t('whatsapp.toast.enterPhone'));
       return;
     }
@@ -461,7 +501,7 @@ const WhatsAppControl = ({ selectedWorker, onWorkerSelect, onRefresh }) => {
       
       // 使用Master服务的手机号登录API
       const loginData = {
-        login_phone: loginForm.login_phone,
+        login_phone: phoneToUse,
         signin_type: loginForm.signin_type,
         hardware_info: loginForm.hardware_info,
         is_cache_login: loginForm.is_cache_login,
@@ -574,11 +614,15 @@ const WhatsAppControl = ({ selectedWorker, onWorkerSelect, onRefresh }) => {
       
       if (response.data.success) {
         toast.success(t('whatsapp.toast.logoutSuccess'));
-        setLoginStatus(null);
+        // 立即更新为已断开状态，避免 UI 回退到 selectedWorker 的旧状态
+        setLoginStatus({ success: true, status: 'disconnected', data: { status: 'disconnected' } });
         setContacts([]);
         setMessages([]);
         setQrCode(null);
         setPairingCode(null);
+        
+        // 触发一次真实的状体检查，确保 Master 同步了最新状态
+        setTimeout(() => checkLoginStatus(), 500);
       } else {
         toast.error(response.data.message || t('whatsapp.toast.logoutFailed'));
       }
@@ -1085,17 +1129,21 @@ const WhatsAppControl = ({ selectedWorker, onWorkerSelect, onRefresh }) => {
 
                   <div>
                     <label className="block text-sm font-semibold text-text-main mb-2">{t('whatsapp.login.identityLabel')}</label>
-                    <input
-                      type="text"
-                      value={loginForm.login_phone}
-                      onChange={(e) => setLoginForm({...loginForm, login_phone: e.target.value})}
-                      placeholder={t('whatsapp.login.identityPlaceholder')}
-                      className="input-field w-full"
-                    />
-                    <p className="mt-2 text-xs text-text-secondary flex items-center">
-                      <AlertCircle className="w-3 h-3 mr-1" />
-                      {t('whatsapp.login.identityHint')}
-                    </p>
+                    {!selectedWorker && (
+                      <>
+                        <input
+                          type="text"
+                          value={loginForm.login_phone}
+                          onChange={(e) => setLoginForm({...loginForm, login_phone: e.target.value})}
+                          placeholder={t('whatsapp.login.identityPlaceholder')}
+                          className="input-field w-full"
+                        />
+                        <p className="mt-2 text-xs text-text-secondary flex items-center">
+                          <AlertCircle className="w-3 h-3 mr-1" />
+                          {t('whatsapp.login.identityHint')}
+                        </p>
+                      </>
+                    )}
                   </div>
 
                   <div className="flex items-center space-x-6 bg-bg/50 p-4 rounded-xl">

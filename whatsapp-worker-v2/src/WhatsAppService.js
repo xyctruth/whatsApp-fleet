@@ -758,6 +758,11 @@ class WhatsAppService {
     }
     
     async getStatusResponse() {
+        // Sanity check: ensure status is consistent with isLoggedIn
+        if (!this.isLoggedIn && this.status === 'logged_in') {
+             this.status = 'disconnected';
+        }
+
          return {
             success: true,
             is_logged_in: this.isLoggedIn,
@@ -849,8 +854,18 @@ class WhatsAppService {
 
     async logout() {
         if (this.client && this.isLoggedIn) {
-            await this.client.logout();
+            // Update status immediately before async logout
+            this.status = 'logging_out';
+            try {
+                await this.client.logout();
+            } catch(e) {
+                console.error("Logout error:", e);
+            }
+            // Force state update
             this.isLoggedIn = false;
+            this.status = 'disconnected'; // Or 'idle'
+            this.qrCode = null;
+            this.pairingCode = null;
         }
     }
 }

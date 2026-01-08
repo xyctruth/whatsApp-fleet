@@ -90,6 +90,7 @@ secrets.json
 *.tar.gz
 *.rar
 *.db
+*.csv
 
 whatsapp-web.js/
 
